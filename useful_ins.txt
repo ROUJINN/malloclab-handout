@@ -1,0 +1,9 @@
+start with an implicit free list (mm-textbook.c in your handout directory),
+then change this to an explicit list
+then use the explicit list as the basis for a final version based on segregated lists.
+
+mm-naive.c 很短，一下就可以看完，用来热身
+mm-textbook.c 基本上包括各种所需的宏以及存储结构，一定要好好理解清楚
+确定了具体保存信息的数据结构之后，一定要先完成 heap checker
+
+最后建议直接在服务器上写这个lab，这样就不会因为机器间的性能差异被坑了！！
