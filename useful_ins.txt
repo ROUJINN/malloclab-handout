@@ -63,3 +63,9 @@ they match.
 感觉malloc时还有个小优化就是就是新加block的size，可以看看前面一个块是不是空的，但是引入这个判断不知道会不会降低效率
 
 最小的free block是8还是16貌似没影响，爽啊，那就不改了
+
+0000
+
+    unsigned long p = 0x0000000100000000;
+
+对指针的所有运算都用void* 或者unsigned
