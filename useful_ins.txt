@@ -40,6 +40,9 @@ ppt p63对上面的有介绍
 
 分离适配是最好的，malloc所用的。
 
+prol
+epil
+
 • Checking the heap (implicit list, explicit list, segregated list):
 – Check epilogue and prologue blocks.
 – Check each block’s address alignment.
@@ -57,3 +60,6 @@ they match.
 
 显式空闲链表+去脚部+立即合并
 可以改成延迟合并，暂时先不改吧
+感觉malloc时还有个小优化就是就是新加block的size，可以看看前面一个块是不是空的，但是引入这个判断不知道会不会降低效率
+
+最小的free block是8还是16貌似没影响，爽啊，那就不改了

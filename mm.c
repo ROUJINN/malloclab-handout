@@ -3,7 +3,7 @@
  *
  * 罗骏 2200011351@stu.pku.edu.cn
  * 
- * header的最后一位为1代表已经allocate,倒数第二位为1代表previous block allocated
+ * header的最后一位为1代表已经allocate,倒数第二位为1代表MEM上previous block allocated，这个十分巧妙。
  */
 #include <assert.h>
 #include <stdio.h>
@@ -65,13 +65,7 @@
 
 
 
-
-
-
-
-
-
-static char *root = 0; /*先让这个一直指向序言块开始*/
+static char *root = 0; /*prol的next*/
 
 
 /*
@@ -82,18 +76,26 @@ int mm_init(void)
     
 
     /* Create the initial empty heap */
-    root = mem_sbrk(2*WSIZE);
-    PUT(root,PACK(0,1)); /* prologue header and only need header */
-    PUT(root+WSIZE,PACK(0,1)); /* epilogue header*/
+    root = mem_sbrk(6*WSIZE);
+    PUT(root,PACK(0,0b01)); /* prologue header */
+    PUT(root+WSIZE,root+3*WSIZE); /* prologue bp */
+    PUT(root+2*WSIZE,NULL); /* prologue pp */
+    PUT(root+WSIZE,PACK(0,0b11)); /* epilogue header*/
+    PUT(root+WSIZE,NULL); /* epilogue bp*/
+    PUT(root+WSIZE,root+2*WSIZE); /* epilogue pp*/
+
+    root = root + WSIZE;
 
     extend_heap(CHUNKSIZE/WSIZE);
-    PUT()
 }
 
 /*
  * malloc
  */
 void *malloc (size_t size) {
+
+    size_t asize;
+    size_t extend_size;
 
     if (heap_listp == 0){
         mm_init();
@@ -102,24 +104,41 @@ void *malloc (size_t size) {
     /* Ignore spurious requests */
     if (size == 0)
         return NULL;
+    
+    /*空闲块最小16byte*/
+    if (size <= 3*WSIZE) {
+        asize = 2*DSIZE;
+    }
+    else {
+        asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
+    }
 
+    if ((bp = find_fit(asize)) != NULL) {  
+        place(bp, asize);                  
+        return bp;
+    }
 
-
-
-    return NULL;
+    /* No fit found. Get more memory and place the block */
+    extendsize = MAX(asize,CHUNKSIZE);                 
+    if ((bp = extend_heap(extendsize/WSIZE)) == NULL)  
+        return NULL;                                  
+    place(bp, asize);                                 
+    return bp;
 }
 
 /*
  * free
  */
-void free (void *bp) {
+void free(void *bp) {
 
     size_t size = GET_SIZE(BP2P(bp));
+    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
     if (root == 0){
         mm_init();
     }
 
+    PUT(BP2P(bp), PACK(size,2*prev_alloc)); /*这里需要清除一下，因为后面coalesce有可能直接返回bp*/
 
     coalesce(bp);
 }
@@ -128,7 +147,22 @@ void free (void *bp) {
  * realloc - you may want to look at mm-naive.c
  */
 void *realloc(void *oldptr, size_t size) {
+    size_t oldsize;
+    void *newptr;
+
+    /* If size == 0 then this is just free, and we return NULL. */
+    if(size == 0) {
+        free(oldptr);
+        return 0;
+    }
+
+    /* If oldptr is NULL, then this is just malloc. */
+    if(oldptr == NULL) {
+        return malloc(size);
+    }
     return NULL;
+
+    /*要什么复制数据之类的，先不管*/
 }
 
 /*
@@ -137,8 +171,13 @@ void *realloc(void *oldptr, size_t size) {
  * needed to run the traces.
  */
 void *calloc (size_t nmemb, size_t size) {
+    size_t bytes = nmemb * size;
+    void *newptr;
 
-    return NULL;
+    newptr = malloc(bytes);
+    memset(newptr, 0, bytes);
+
+    return newptr;
 }
 
 
@@ -198,10 +237,24 @@ static void *link_delete(void *bp) {
 static void *link_LIFOinsert(void *bp) {
     void *next_bp = LINK_NEXT_BP(root);
     void *next_pp = BP2PP(next_bp);    
+    void *prev_bp = root;
+    void *prev_pp = BP2PP(prev_bp);
 
-    PUT(root,bp);
-
+    PUT(prev_bp,bp);
     PUT(bp,next_bp);
+    PUT(BP2PP(bp),prev_pp);
+    PUT(next_pp,BP2PP(bp));
+}
+
+static void *link_insert(void *bp) {
+    void *next_bp = LINK_NEXT_BP(bp);
+    void *next_pp = BP2PP(next_bp);    
+    void *prev_pp = LINK_PREV_PP(BP2PP(bp));
+    void *prev_bp = PP2BP(prev_pp);
+
+    PUT(prev_bp,bp);
+    PUT(bp,next_bp);
+    PUT(BP2PP(bp),prev_pp);
     PUT(next_pp,BP2PP(bp));
 }
 
@@ -251,15 +304,58 @@ static void *coalesce(void *bp) {
     }
 }
 
+/* 新申请的块逻辑上放在链表最开始处 */
 static void *extend_heap(size_t words) {
-    char *bp;
-    size_t size;
 
     /* Allocate an even number of words to maintain alignment */
-    size = (words % 2) ? (words+1) * WSIZE : words * WSIZE; 
+    size_t size = (words % 2) ? (words+1) * WSIZE : words * WSIZE; 
 
-    bp = mem_sbrk(size);
+    char *temp_p = mem_sbrk(size);
+    char *bp = temp_p - DSIZE;
+    char *epil_bp = bp + size;
+    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
+    char *prev_pp = LINK_PREV_PP(BP2PP(bp));
+    char *prev_bp = PP2BP(bp);
     
-    
+    /*新的epil*/
+    PUT(epil_bp,NULL);
+    PUT(BP2PP(epil_bp),prev_pp);
+    PUT(prev_bp,epil_bp);
+
+    /*新的块*/
+    PUT(BP2P(bp),PACK(size, 2*prev_alloc));
+    PUT(BP2FP(bp),PACK(size, 2*prev_alloc));
+
+    /* 插入这个bp，新的块插在链表开始处 */
+    link_LIFOinsert(bp);
+
+    return coalesce(bp);
 }
 
+/* first fit */
+static void find_fit(size_t asize) {
+    void *bp;
+    for (bp = root; GET_SIZE(BP2P(bp)) > 0; bp = LINK_NEXT_BP(bp)) {
+        if (asize <= GET_SIZE(BP2P(bp))) {
+            return bp;
+        }
+    }
+    return NULL;
+}
+
+static void place(void *bp, size_t asize) {
+    size_t csize = GET_SIZE(BP2P(bp));
+    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
+
+    if ((csize - asize) >= 2*DSIZE) {
+        PUT(BP2P(bp), PACK(asize, 2*prev_alloc));
+        bp = MEM_NEXT_BP(bp);
+        PUT(BP2P(bp), PACK(csize-asize,0b10));
+        PUT(BP2FP(bp), PACK(csize-asize),0b10);
+    }
+
+    else {
+        PUT(BP2P(bp), PACK(csize, 2*prev_alloc));
+        PUT(BP2FP(bp), PACK(csize, 2*prev_alloc));
+    }
+}
