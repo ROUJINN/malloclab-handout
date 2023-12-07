@@ -7,3 +7,53 @@ mm-textbook.c 基本上包括各种所需的宏以及存储结构，一定要好
 确定了具体保存信息的数据结构之后，一定要先完成 heap checker
 
 最后建议直接在服务器上写这个lab，这样就不会因为机器间的性能差异被坑了！！
+
+trace文件的意思https://111qqz.com/2021/04/csapp-malloclab/
+对于每一个操作，如果是malloc/relloc, 后面两个参数分别表示操作几号内存块，以及需要分配的内存大小是多少。如果是free,则只有一个参数，表示要操作几号内存块
+
+64-bit machines, heap size 2^32 bytes
+Your allocator must always return pointers that are aligned to 8-byte boundaries
+5 各个function功能的介绍
+6  Support Routines
+8 Programming Rules
+11 hints
+12 more hints
+u只记入uti p只计入thru 
+
+初始试了一下mm-textbook，发现50util,0thru，说明时间很慢
+
+书上：
+隐式空闲链表的优点是简单。显著的缺点是任何操作的开销，例如放置分配的块，要求对空闲链表进行搜索，该搜索所需时间与堆中已分配块和空闲块的总数呈线性关系。
+
+我们将看到更加精细复杂的分离式空闲链表组织，它接近于最佳适配策略，不需要进行彻底的堆搜索。
+
+边界标记（boundary tag），允许在常数时间内进行对前面块的合并
+
+在对分配器的讨论中，我们会假设使用立即合并，但是你应该了解，快速的分配器通常会选择某种形式的推迟合并。
+
+使用双向链表（显式空闲链表）而不是隐式空闲链表，使首次适配的分配时间从块总数的线性时间减少到了空闲块数量的线性时间。不过，释放一个块的时间可以是线性的，也可能是个常数，这取决于我们所选择的空闲链表中块的排序策略。
+一种方法是用后进先出（LIFO）的顺序维护链表，将新释放的块放置在链表的开始处。使用 LIFO 的顺序和首次适配的放置策略，分配器会最先检查最近使用过的块。在这种情况下，释放一个块可以在常数时间内完成。如果使用了边界标记，那么合并也可以在常数时间内完成。
+另一种方法是按照地址顺序来维护链表，其中链表中每个块的地址都小于它后继的地址。在这种情况下，释放一个块需要线性时间的搜索来定位合适的前驱。平衡点在于，按照地址排序的首次适配比 LIFO 排序的首次适配有更高的内存利用率，接近最佳适配的利用率。
+ppt p63对上面的有介绍
+
+简单分离存储：这种简单的方法有许多优点。分配和释放块都是很快的常数时间操作。而且，每个片中都是大小相等的块，不分割，不合并，这意味着每个块只有很少的内存开销。
+
+分离适配是最好的，malloc所用的。
+
+• Checking the heap (implicit list, explicit list, segregated list):
+– Check epilogue and prologue blocks.
+– Check each block’s address alignment.
+– Check heap boundaries.
+– Check each block’s header and footer: size (minimum size, alignment), previous/next allocate/free bit consistency, header and footer matching each other.
+– Check coalescing: no two consecutive free blocks in the heap.
+
+• Checking the free list (explicit list, segregated list):
+– All next/previous pointers are consistent (if A’s next pointer points to B, B’s previous pointer
+should point to A).
+– All free list pointers points between mem heap lo() and mem heap high().
+– Count free blocks by iterating through every block and traversing free list by pointers and see if
+they match.
+– All blocks in each list bucket fall within bucket size range (segregated list)
+
+显式空闲链表+去脚部+立即合并
+可以改成延迟合并，暂时先不改吧
