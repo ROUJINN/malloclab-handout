@@ -43,11 +43,14 @@
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(p) (((size_t)(p) + (ALIGNMENT-1)) & ~0x7)
 
- 
-static unsigned long base = (*(unsigned long *)mem_heap_lo()) & 0x00000000;
+
+static inline unsigned long base() {
+    return ((*(unsigned long *)mem_heap_lo()) & 0x00000000);
+}
+
 
 /* 给一个unsigned的指针返回unsigned long */
-#define EXTEND_PTR(p) (base + (unsigned long)p) 
+#define EXTEND_PTR(p) (base() + (unsigned long)p) 
 
 /* 拿void*指针的后32位作为unsigned，这里直接类型转换就是取后32位 */
 #define SHRINK_PTR(p) ((unsigned)(p))
@@ -55,7 +58,7 @@ static unsigned long base = (*(unsigned long *)mem_heap_lo()) & 0x00000000;
 /*返回一个unsigned*/
 #define GET(p)       (*(unsigned *)(EXTEND_PTR(p))) 
 
-/*给unsigned的指针，往里放东西*/
+/*给unsigned的指针，往里放unsigned的值*/
 #define PUT(p, val)  (*(unsigned *)(EXTEND_PTR(p)) = (val))
 #define PACK(size, alloc)  ((size) | (alloc))
 
@@ -82,14 +85,6 @@ static unsigned long base = (*(unsigned long *)mem_heap_lo()) & 0x00000000;
 
 /*FP代表脚部指针，需要这个时前一个必定空闲，从而有脚部*/
 #define MEM_PREV_FP(bp) ((bp) - DSIZE) 
-
-// static void place(void *bp, size_t asize);
-// static void *find_fit(size_t asize);
-// static void *extend_heap(size_t words);
-// static void *coalesce(void *bp);
-// static void link_insert(void *bp);
-// static void link_LIFOinsert(void *bp);
-// static void link_delete(void *bp);
 
 void mm_checkheap(int lineno);
 
@@ -123,7 +118,7 @@ void *malloc (size_t size) {
 
     size_t asize;
     size_t extend_size;
-    void *bp;
+    unsigned bp;
 
     if (root == 0){
         mm_init();
@@ -141,7 +136,7 @@ void *malloc (size_t size) {
         asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
     }
 
-    if ((bp = find_fit(asize)) != NULL) {  
+    if ((bp = find_fit(asize)) != 0) {  
         place(bp, asize);                  
         return bp;
     }
@@ -157,8 +152,9 @@ void *malloc (size_t size) {
 /*
  * free
  */
-void free(void *bp) {
+void free(void* ptr) {
 
+    bp = 
     size_t size = GET_SIZE(BP2P(bp));
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
@@ -166,7 +162,7 @@ void free(void *bp) {
         mm_init();
     }
 
-    PUT(BP2P(bp), PACK(size,2*prev_alloc)); /*这里需要清除一下，因为后面coalesce有可能直接返回bp*/
+    PUT(BP2P(bp), PACK((unsigned)size,2*prev_alloc)); /*这里需要清除一下，因为后面coalesce有可能直接返回bp*/
 
     coalesce(bp);
 }
@@ -231,7 +227,7 @@ static int aligned(const void *p) {
  */
 void mm_checkheap(int lineno) {
 
-    // void *bp,*heap_lo,*heap_hi;
+    // unsigned bp,*heap_lo,*heap_hi;
 
     // heap_lo = mem_heap_lo();
     // heap_hi = mem_heap_hi();
@@ -252,23 +248,23 @@ void mm_checkheap(int lineno) {
     // }
 }
 
-static void link_delete(void *bp) {
+static void link_delete(unsigned bp) {
     
-    void *prev_pp = LINK_PREV_PP(BP2PP(bp));
-    void *prev_bp = PP2BP(prev_pp);
-    void *next_bp = LINK_NEXT_BP(bp);
-    void *next_pp = BP2PP(next_bp);
+    unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
+    unsigned prev_bp = PP2BP(prev_pp);
+    unsigned next_bp = LINK_NEXT_BP(bp);
+    unsigned next_pp = BP2PP(next_bp);
 
     PUT(prev_bp,next_bp);
     PUT(next_pp,prev_pp);
     return;
 }
 
-static void link_LIFOinsert(void *bp) {
-    void *next_bp = LINK_NEXT_BP(root);
-    void *next_pp = BP2PP(next_bp);    
-    void *prev_bp = root;
-    void *prev_pp = BP2PP(prev_bp);
+static void link_LIFOinsert(unsigned bp) {
+    unsigned next_bp = LINK_NEXT_BP(root);
+    unsigned next_pp = BP2PP(next_bp);    
+    unsigned prev_bp = root;
+    unsigned prev_pp = BP2PP(prev_bp);
 
     PUT(prev_bp,bp);
     PUT(bp,next_bp);
@@ -277,11 +273,11 @@ static void link_LIFOinsert(void *bp) {
     return;
 }
 
-static void link_insert(void *bp) {
-    void *next_bp = LINK_NEXT_BP(bp);
-    void *next_pp = BP2PP(next_bp);    
-    void *prev_pp = LINK_PREV_PP(BP2PP(bp));
-    void *prev_bp = PP2BP(prev_pp);
+static void link_insert(unsigned bp) {
+    unsigned next_bp = LINK_NEXT_BP(bp);
+    unsigned next_pp = BP2PP(next_bp);    
+    unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
+    unsigned prev_bp = PP2BP(prev_pp);
 
     PUT(prev_bp,bp);
     PUT(bp,next_bp);
@@ -290,11 +286,11 @@ static void link_insert(void *bp) {
     return;
 }
 
-static void *coalesce(void *bp) {
+static unsigned coalesce(unsigned bp) {
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
     unsigned next_alloc = CUR_ALLOC(BP2P(MEM_NEXT_BP(bp)));
     unsigned prev_prev_alloc = MEM_PREV_ALLOC(MEM_PREV_FP(bp));
-    size_t size = GET_SIZE(BP2P(bp));
+    unsigned size = GET_SIZE(BP2P(bp));
 
     if (prev_alloc && next_alloc) {
         link_LIFOinsert(bp);
@@ -338,17 +334,17 @@ static void *coalesce(void *bp) {
 }
 
 /* 新申请的块逻辑上放在链表最开始处 */
-static void *extend_heap(size_t words) {
+static unsigned extend_heap(size_t words) {
 
     /* Allocate an even number of words to maintain alignment */
     size_t size = (words % 2) ? (words+1) * WSIZE : words * WSIZE; 
 
-    void *temp_p = mem_sbrk(size);
-    void *bp = temp_p - DSIZE;
-    void *epil_bp = bp + size;
+    unsigned temp_p = SHRINK_PTR(mem_sbrk(size));
+    unsigned bp = temp_p - DSIZE;
+    unsigned epil_bp = bp + (unsigned)size;
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
-    void *prev_pp = LINK_PREV_PP(BP2PP(bp));
-    void *prev_bp = PP2BP(bp);
+    unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
+    unsigned prev_bp = PP2BP(bp);
     
     /*新的epil*/
     PUT(epil_bp,NULL);
@@ -365,19 +361,19 @@ static void *extend_heap(size_t words) {
     return coalesce(bp);
 }
 
-/* first fit */
-static void* find_fit(size_t asize) {
-    void *bp;
+/* first fit，成功返回unsigned bp，否则返回0*/
+static unsigned find_fit(size_t asize) {
+    unsigned bp;
     for (bp = root; GET_SIZE(BP2P(bp)) > 0; bp = LINK_NEXT_BP(bp)) {
         if (asize <= GET_SIZE(BP2P(bp))) {
             return bp;
         }
     }
-    return NULL;
+    return 0;
 }
 
-static void place(void *bp, size_t asize) {
-    size_t csize = GET_SIZE(BP2P(bp));
+static void place(unsigned bp, size_t asize) {
+    unsigned csize = GET_SIZE(BP2P(bp));
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
     if ((csize - asize) >= 2*DSIZE) {

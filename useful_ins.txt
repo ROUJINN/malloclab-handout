@@ -68,4 +68,6 @@ they match.
 
     unsigned long p = 0x0000000100000000;
 
-对指针的所有运算都用void* 或者unsigned
+git commit --amend --message="new message"
+
+malloc最后返回的还得是真实指针，free的参数也得是真实的，累鼠了。
