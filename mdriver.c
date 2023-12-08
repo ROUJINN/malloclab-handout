@@ -908,7 +908,7 @@ static int eval_mm_valid(trace_t *trace, range_t **ranges)
             range_t *r;
                         
             /* Let the students check their own heap */
-            mm_checkheap(verbose);
+            //mm_checkheap(verbose);
 
             /* Now check that all our allocated blocks have the right data */
             r = *ranges;

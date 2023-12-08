@@ -37,8 +37,8 @@
 #define ALIGNMENT 8
 #define WSIZE       4       /* Word and header/footer size (bytes) */ 
 #define DSIZE       8       /* Double word size (bytes) */
-#define CHUNKSIZE  1u<<12  /* Extend heap by this amount (bytes) */
-#define HEAPSIZE 1lu<<32 
+#define CHUNKSIZE  (1u<<12)  /* Extend heap by this amount (bytes) */
+#define HEAPSIZE (1lu<<32) 
 
 #define MAX(x, y) ((x) > (y)? (x) : (y)) 
 
@@ -47,12 +47,11 @@
 
 
 static inline unsigned long base() {
-    return ((*(unsigned long *)mem_heap_lo()) & 0x00000000);
+    return ((unsigned long)mem_heap_lo());
 }
 
-
-/* 给一个unsigned的指针返回unsigned long */
-#define EXTEND_PTR(p) (void*)(base() + (unsigned long)p) 
+/* 给一个unsigned的指针返回void* */
+#define EXTEND_PTR(p) ((void*)(base() + (unsigned long)(p)))
 
 /* 拿void*指针的后32位作为unsigned，这里直接类型转换就是取后32位 */
 #define SHRINK_PTR(p) ((unsigned)(uintptr_t)(p))
@@ -76,7 +75,7 @@ static inline unsigned long base() {
 /*size是asize，包含头尾，类型是unsigned*/
 #define GET_SIZE(p)  (GET(p) & ~0x7)  
 
-/* 返回unsigned */
+/* 给unsigned，返回unsigned */
 #define LINK_NEXT_BP(bp)  (GET(bp))
 #define LINK_PREV_PP(pp)  (GET(pp))
 
@@ -91,6 +90,15 @@ static inline unsigned long base() {
 void mm_checkheap(int lineno);
 
 static void *root = NULL; /*prol的next*/
+static unsigned prol_bp;
+
+static void check4bp(unsigned bp) {
+    printf("%u\n",bp);
+    printf("%u\n",LINK_NEXT_BP(bp));
+    printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(bp)));
+    printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(LINK_NEXT_BP(bp))));
+    return;
+}
 
 static void link_delete(unsigned bp) {
     
@@ -105,9 +113,10 @@ static void link_delete(unsigned bp) {
 }
 
 static void link_LIFOinsert(unsigned bp) {
-    unsigned next_bp = LINK_NEXT_BP(root);
+    //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+    unsigned next_bp = LINK_NEXT_BP(prol_bp);
     unsigned next_pp = BP2PP(next_bp);    
-    unsigned prev_bp = SHRINK_PTR(root);
+    unsigned prev_bp = SHRINK_PTR(prol_bp);
     unsigned prev_pp = BP2PP(prev_bp);
 
     PUT(prev_bp,bp);
@@ -119,7 +128,8 @@ static void link_LIFOinsert(unsigned bp) {
 
 static void link_insert(unsigned bp) {
     unsigned next_bp = LINK_NEXT_BP(bp);
-    unsigned next_pp = BP2PP(next_bp);    
+    unsigned next_pp = BP2PP(next_bp);
+
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
 
@@ -130,6 +140,7 @@ static void link_insert(unsigned bp) {
     return;
 }
 
+/*要合并，一定是空闲块合并，空闲块一定在链表中*/
 static unsigned coalesce(unsigned bp) {
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
     unsigned next_alloc = CUR_ALLOC(BP2P(MEM_NEXT_BP(bp)));
@@ -137,27 +148,32 @@ static unsigned coalesce(unsigned bp) {
     unsigned size = GET_SIZE(BP2P(bp));
 
     if (prev_alloc && next_alloc) {
-        link_LIFOinsert(bp);
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
         return bp;
     }
 
     /* 和后一个合并 */
     else if (prev_alloc && !next_alloc) {
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
         size += GET_SIZE(BP2P(MEM_NEXT_BP(bp)));
         link_delete(MEM_NEXT_BP(bp));
 
         PUT(BP2P(bp), PACK(size, 0b10));
         PUT(BP2FP(bp), PACK(size, 0b10)); /*注意这里bp前的p的size已经更新了，所以可以直接BP2FP*/
 
-        link_LIFOinsert(bp);
         return bp;
     }    
 
     /* 和前一个合并 */
     else if (!prev_alloc && next_alloc) {
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
+        link_delete(bp);
         size += GET_SIZE(MEM_PREV_FP(bp));
         PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc)); /*等价于pack 0b10或0b00*/
         bp = FP2BP(MEM_PREV_FP(bp));
+        printf("%u\n",bp);
         link_delete(bp);
         PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
         link_LIFOinsert(bp);
@@ -166,6 +182,9 @@ static unsigned coalesce(unsigned bp) {
 
     /* 前后都合并 */
     else {
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
+        link_delete(bp);
         size += GET_SIZE(BP2P(MEM_NEXT_BP(bp))) + GET_SIZE(MEM_PREV_FP(bp));
         link_delete(MEM_NEXT_BP(bp));
         bp = FP2BP(MEM_PREV_FP(bp));
@@ -179,21 +198,26 @@ static unsigned coalesce(unsigned bp) {
 
 /* 新申请的块逻辑上放在链表最开始处 */
 static unsigned extend_heap(size_t words) {
+    //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
     /* Allocate an even number of words to maintain alignment */
     size_t size = (words % 2) ? (words+1) * WSIZE : words * WSIZE; 
 
-    unsigned temp_p = SHRINK_PTR(mem_sbrk(size));
+    /*在这开辟新的堆*/
+    unsigned temp_p = SHRINK_PTR(mem_sbrk(size)); 
+
     unsigned bp = temp_p - DSIZE;
     unsigned epil_bp = bp + (unsigned)size;
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
-    unsigned prev_bp = PP2BP(bp);
+    unsigned prev_bp = PP2BP(prev_pp);
     
-    /*新的epil*/
+    
+    /*新的epil，MEM上前一个是free的*/
+    PUT(BP2P(epil_bp),0b01);
     PUT(epil_bp,0);
-    PUT(BP2PP(epil_bp),prev_pp);
     PUT(prev_bp,epil_bp);
+    PUT(BP2PP(epil_bp),prev_pp);
 
     /*新的块*/
     PUT(BP2P(bp),PACK(size, 2*prev_alloc));
@@ -201,14 +225,15 @@ static unsigned extend_heap(size_t words) {
 
     /* 插入这个bp，新的块插在链表开始处 */
     link_LIFOinsert(bp);
-
+    mm_checkheap(__LINE__);
+    
     return coalesce(bp);
 }
 
 /* first fit，成功返回unsigned bp，否则返回0*/
 static unsigned find_fit(unsigned asize) {
     unsigned bp;
-    for (bp = SHRINK_PTR(root); GET_SIZE(BP2P(bp)) > 0; bp = LINK_NEXT_BP(bp)) {
+    for (bp = prol_bp; bp != 0; bp = LINK_NEXT_BP(bp)) {
         if (asize <= GET_SIZE(BP2P(bp))) {
             return bp;
         }
@@ -220,40 +245,66 @@ static void place(unsigned bp, unsigned asize) {
     unsigned csize = GET_SIZE(BP2P(bp));
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
+    unsigned next_bp = LINK_NEXT_BP(bp);
+    unsigned next_pp = BP2PP(next_bp);
+        
+    unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
+    unsigned prev_bp = PP2BP(prev_pp);
+
+    link_delete(bp);
+
     if ((csize - asize) >= 2*DSIZE) {
-        PUT(BP2P(bp), PACK(asize, 2*prev_alloc));
+        PUT(BP2P(bp), PACK(asize, 2*prev_alloc+1));
         bp = MEM_NEXT_BP(bp);
         PUT(BP2P(bp), PACK(csize-asize,0b10));
         PUT(BP2FP(bp), PACK(csize-asize,0b10));
+
+        /*插入链表*/
+        PUT(prev_bp,bp);
+        PUT(bp,next_bp);
+        PUT(BP2PP(bp),prev_pp);
+        PUT(next_pp,BP2PP(bp));
+
+        //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
     }
 
     else {
-        PUT(BP2P(bp), PACK(csize, 2*prev_alloc));
-        PUT(BP2FP(bp), PACK(csize, 2*prev_alloc));
+        PUT(BP2P(bp), PACK(csize, 2*prev_alloc+1));
+        PUT(BP2FP(bp), PACK(csize, 2*prev_alloc+1));
     }
 }
-
-
-
 
 /*
  * Initialize: return -1 on error, 0 on success.
  */
 int mm_init(void) 
 {
+    dbg_printf("\n");
+    dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+    //dbg_printf("mem_heap_lo:%p\n",mem_heap_lo());
+
     root = mem_sbrk(6*WSIZE);
+
+    //dbg_printf("root:%p\n",root);
+    
+
     unsigned tmp_root = SHRINK_PTR(root);
 
-    PUT(tmp_root,PACK(0,0b01)); /* prologue header */
-    PUT(tmp_root+WSIZE,tmp_root+3*WSIZE); /* prologue bp */
+    PUT(tmp_root,0b01); /* prologue header */
+    PUT(tmp_root+WSIZE,tmp_root+4*WSIZE); /* prologue bp */
     PUT(tmp_root+2*WSIZE,0); /* prologue pp */
-    PUT(tmp_root+WSIZE,PACK(0,0b11)); /* epilogue header*/
-    PUT(tmp_root+WSIZE,0); /* epilogue bp*/
-    PUT(tmp_root+WSIZE,tmp_root+2*WSIZE); /* epilogue pp*/
+    PUT(tmp_root+3*WSIZE,0b11); /* epilogue header*/
+    PUT(tmp_root+4*WSIZE,0); /* epilogue bp*/
+    PUT(tmp_root+5*WSIZE,tmp_root+2*WSIZE); /* epilogue pp*/
 
     root = root + WSIZE;
+    prol_bp = SHRINK_PTR(root);
+
+
 
     extend_heap(CHUNKSIZE/WSIZE);
+    //dbg_printf("line:%d,mem_heap_hi:%p\n",__LINE__,mem_heap_hi());
+
     return 0;
 }
 
@@ -261,14 +312,15 @@ int mm_init(void)
  * malloc
  */
 void *malloc (size_t size) {
-
+    //check4bp(prol_bp);
+    
     size_t asize;
     size_t extend_size;
     unsigned bp,req_size;
 
-    if (root == NULL){
-        mm_init();
-    }
+    // if (root == NULL){
+    //     mm_init();
+    // }
     
     /* Ignore spurious requests */
     if (size == 0)
@@ -289,32 +341,48 @@ void *malloc (size_t size) {
 
     req_size = (unsigned)(asize);
     if ((bp = find_fit(req_size)) != 0u) {  
-        place(bp, req_size);                  
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
+        place(bp, req_size);     
+        //check4bp(prol_bp);             
         return EXTEND_PTR(bp);
     }
 
-    /* No fit found. Get more memory and place the block */
-    extend_size = MAX(asize,CHUNKSIZE);                 
-    if ((bp = extend_heap(extend_size/WSIZE)) == 0)  
-        return NULL;                                  
-    place(bp, asize);                                 
-    return EXTEND_PTR(bp);
+    else {
+        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
+        /* No fit found. Get more memory and place the block */
+        extend_size = MAX(asize,CHUNKSIZE);                 
+        if ((bp = extend_heap(extend_size/WSIZE)) == 0) {  
+            return NULL;    
+        }
+        // printf("fucking bug\n");
+        // mm_checkheap(__LINE__);
+        // printf("checked\n");                               
+        place(bp, asize);
+        // mm_checkheap(__LINE__);
+        // printf("checked\n");                                 
+        return EXTEND_PTR(bp);
+    }
 }
 
 /*
  * free
  */
 void free(void* ptr) {
+    dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+    mm_checkheap(__LINE__);
 
     unsigned bp = SHRINK_PTR(ptr);
     unsigned size = GET_SIZE(BP2P(bp));
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
-    if (root == NULL){
-        mm_init();
-    }
+    // if (root == NULL){
+    //     mm_init();
+    // }
 
     PUT(BP2P(bp), PACK(size,2*prev_alloc)); /*这里需要清除一下，因为后面coalesce有可能直接返回bp*/
+    link_LIFOinsert(bp);
 
     coalesce(bp);
 }
@@ -375,28 +443,39 @@ static int aligned(const void *p) {
 }
 
 /*
- * mm_checkheap
+ * • Checking the heap (implicit list, explicit list, segregated list):
+– Check epilogue and prologue blocks.
+– Check each block’s address alignment.
+– Check heap boundaries.
+– Check each block’s header and footer: size (minimum size, alignment), previous/next allocate/free bit consistency, header and footer matching each other.
+– Check coalescing: no two consecutive free blocks in the heap.
+
+• Checking the free list (explicit list, segregated list):
+– All next/previous pointers are consistent (if A’s next pointer points to B, B’s previous pointer
+should point to A).
+– All free list pointers points between mem heap lo() and mem heap high().
+– Count free blocks by iterating through every block and traversing free list by pointers and see if
+they match.
+– All blocks in each list bucket fall within bucket size range (segregated list)
  */
 void mm_checkheap(int lineno) {
-
-    // unsigned bp,*heap_lo,*heap_hi;
-
-    // heap_lo = mem_heap_lo();
-    // heap_hi = mem_heap_hi();
-
-    // /*Check epilogue blocks.*/
-    // if (GET(heap_listp) != PACK(0,1)) {
-    //     printf("epilogue error in line %d\n",lineno);
-    // }
-
-    // /*Check each block’s address alignment and .*/
-    // for (bp = heap_listp; GET_SIZE(HDRP(bp)) > 0; bp = NEXT_BLKP(bp)) {
-    //     if (!aligned((void*)bp)) {
-    //         printf("pointer not aligned in line %d\n",lineno);
-    //     }
-    //     if (!in_heap((void*)bp)) {
-    //         printf("pointer not in heap in line %d\n",lineno);
-    //     }
-    // }
+    //printf("line:%d checkheap\n",lineno);
+    // printf("mem_heap_lo:%p\n",mem_heap_lo());
+    // printf("mem_heap_hi:%p\n",mem_heap_hi());
+    //int i = 0;
+    for (unsigned bp = prol_bp;bp != 0;bp = LINK_NEXT_BP(bp)) {
+        //i ++;
+        printf("line:%d ... %u\n",lineno,bp);
+        if (!in_heap(EXTEND_PTR(bp))) {
+            printf("line:%d checkheap: %d not in heap\n",lineno,bp);
+            break;
+        }
+        if ((bp!=prol_bp) && (!aligned(EXTEND_PTR(bp)))) {
+            printf("line:%d checkheap: %d not aligned\n",lineno,bp);
+            break;
+        }
+        //if (i>5) break;
+    }
+    return;
 }
 

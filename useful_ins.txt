@@ -8,9 +8,6 @@ mm-textbook.c 基本上包括各种所需的宏以及存储结构，一定要好
 
 最后建议直接在服务器上写这个lab，这样就不会因为机器间的性能差异被坑了！！
 
-trace文件的意思https://111qqz.com/2021/04/csapp-malloclab/
-对于每一个操作，如果是malloc/relloc, 后面两个参数分别表示操作几号内存块，以及需要分配的内存大小是多少。如果是free,则只有一个参数，表示要操作几号内存块
-
 64-bit machines, heap size 2^32 bytes
 Your allocator must always return pointers that are aligned to 8-byte boundaries
 5 各个function功能的介绍
@@ -44,20 +41,32 @@ prol
 epil
 implicit 隐式
 
-• Checking the heap (implicit list, explicit list, segregated list):
-– Check epilogue and prologue blocks.
-– Check each block’s address alignment.
-– Check heap boundaries.
-– Check each block’s header and footer: size (minimum size, alignment), previous/next allocate/free bit consistency, header and footer matching each other.
-– Check coalescing: no two consecutive free blocks in the heap.
-
-• Checking the free list (explicit list, segregated list):
-– All next/previous pointers are consistent (if A’s next pointer points to B, B’s previous pointer
-should point to A).
-– All free list pointers points between mem heap lo() and mem heap high().
-– Count free blocks by iterating through every block and traversing free list by pointers and see if
-they match.
-– All blocks in each list bucket fall within bucket size range (segregated list)
+Results for libc malloc:
+  valid  util   ops    secs     Kops  trace
+   yes     0%  100000  0.005344 18714 ./traces/alaska.rep
+ * yes     0%    4805  0.001538  3125 ./traces/amptjp.rep
+ * yes     0%    4162  0.000172 24247 ./traces/bash.rep
+ * yes     0%   57716  0.002832 20383 ./traces/boat.rep
+ * yes     0%  100000  0.005644 17717 ./traces/boat-plus.rep
+ u yes     0%      --        --    -- ./traces/binary2-bal.rep
+ * yes     0%    5032  0.000608  8271 ./traces/cccp.rep
+ * yes     0%    5848  0.000384 15215 ./traces/cccp-bal.rep
+ * yes     0%   11991  0.000437 27427 ./traces/chrome.rep
+ * yes     0%   20000  0.000816 24509 ./traces/coalesce-big.rep
+   yes     0%   14400  0.000806 17876 ./traces/coalescing-bal.rep
+   yes     0%      15  0.000006  2634 ./traces/corners.rep
+ * yes     0%    5683  0.001680  3382 ./traces/cp-decl.rep
+ u yes     0%      --        --    -- ./traces/exhaust.rep
+ * yes     0%    5380  0.000318 16920 ./traces/expr-bal.rep
+ * yes     0%   99544  0.004780 20826 ./traces/firefox-reddit2.rep
+ * yes     0%   55092  0.002993 18407 ./traces/freeciv.rep
+   yes     0%      10  0.000001 16447 ./traces/malloc.rep
+   yes     0%      17  0.000001 31628 ./traces/malloc-free.rep
+ p yes     --    1494  0.000064 23370 ./traces/perl.rep
+ * yes     0%    4800  0.000577  8315 ./traces/random.rep
+ * yes     0%    4800  0.000576  8339 ./traces/random2.rep
+   yes     0%   14401  0.001069 13473 ./traces/realloc.rep
+16 15      0%  386347  0.023419 16497
 
 显式空闲链表+去脚部+立即合并
 可以改成延迟合并，暂时先不改吧
@@ -65,8 +74,37 @@ they match.
 
 最小的free block是8还是16貌似没影响，爽啊，那就不改了
 
-0000
+• Use the mdriver -c option or -f option. During initial development, using tiny trace files will
+simplify debugging and testing.
+• Use the mdriver -V options. The -V option will also indicate when each trace file is processed,
+which will help you isolate errors.
+• Use the mdriver -D option. This does a lot of checking to quickly find errors.
+• Use a debugger. A debugger will help you isolate and identify out-of-bounds memory references.
+Modify the Makefile to pass the -g option to gcc and not to pass the -O3 option to gcc when you
+are using a debugger. But do not forget to restore the Makefile to the original when doing performance
+testing.
+• Use gdb’s watch command to find out what changed some value you did not expect to have changed.
 
-    unsigned long p = 0x0000000100000000;
 
-git commit --amend --message="new message"
+trace文件的意思https://111qqz.com/2021/04/csapp-malloclab/
+第2个数 多少个不同的内存块
+第3个数 操作数，也就是malloc(对应'a'),realloc(对应'r'),free(对应'f')三种操作的个数。
+
+对于每一个操作，如果是malloc/relloc, 后面两个参数分别表示操作几号内存块，以及需要分配的内存大小是多少。如果是free,则只有一个参数，表示要操作几号内存块
+
+gdb mdriver
+r -D -V -c ./traces/short1-bal.rep
+
+./mdriver -D -V -c ./traces/short1-bal.rep 只运行一次
+./mdriver -D -V -c ./traces/short1.rep
+./mdriver -V -c ./traces/short1.rep
+
+dbg_printf("line:%d,unsigned:%u\n",__LINE__, );
+dbg_printf("line:%d,ptr:%p\n",__LINE__, );
+dbg_printf("line:%d,ptr:%p,ptr_value:%u\n",__LINE__, );
+dbg_printf("line:%d,ptr:%p,ptr_value:%u\n",__LINE__,EXTEND_PTR(tmp_root+WSIZE),GET(tmp_root+WSIZE));
+
+dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+
+注意自己改了makefile！！！！！！！！！！测试性能时一定加上O3
+自己注释掉了mdriver里的自动调用checkheap！！！！，来方便printf
