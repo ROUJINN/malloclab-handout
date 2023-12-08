@@ -42,6 +42,7 @@ ppt p63对上面的有介绍
 
 prol
 epil
+implicit 隐式
 
 • Checking the heap (implicit list, explicit list, segregated list):
 – Check epilogue and prologue blocks.
@@ -69,5 +70,3 @@ they match.
     unsigned long p = 0x0000000100000000;
 
 git commit --amend --message="new message"
-
-malloc最后返回的还得是真实指针，free的参数也得是真实的，累鼠了。
