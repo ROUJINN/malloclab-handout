@@ -41,6 +41,8 @@ prol
 epil
 implicit 隐式
 
+alaska,amptjp,bash,boat
+
 Results for libc malloc:
   valid  util   ops    secs     Kops  trace
    yes     0%  100000  0.005344 18714 ./traces/alaska.rep
@@ -93,11 +95,14 @@ trace文件的意思https://111qqz.com/2021/04/csapp-malloclab/
 对于每一个操作，如果是malloc/relloc, 后面两个参数分别表示操作几号内存块，以及需要分配的内存大小是多少。如果是free,则只有一个参数，表示要操作几号内存块
 
 gdb mdriver
-r -D -V -c ./traces/short1-bal.rep
+r -D -V -c ./traces/alaska.rep
 
 ./mdriver -D -V -c ./traces/short1-bal.rep 只运行一次
-./mdriver -D -V -c ./traces/short1.rep
-./mdriver -V -c ./traces/short1.rep
+./mdriver -D -V -c ./traces/short2.rep
+./mdriver -D -V -c ./traces/alaska.rep > 1.txt
+./mdriver
+
+alaska,amptjp,bash,boat,malloc-free
 
 dbg_printf("line:%d,unsigned:%u\n",__LINE__, );
 dbg_printf("line:%d,ptr:%p\n",__LINE__, );
@@ -106,5 +111,7 @@ dbg_printf("line:%d,ptr:%p,ptr_value:%u\n",__LINE__,EXTEND_PTR(tmp_root+WSIZE),G
 
 dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
-注意自己改了makefile！！！！！！！！！！测试性能时一定加上O3
+貌似用环形链表好一点!!
+
+注意自己改了makefile！！！！测试性能时一定加上O3!!!!
 自己注释掉了mdriver里的自动调用checkheap！！！！，来方便printf

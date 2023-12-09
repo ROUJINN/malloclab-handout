@@ -56,7 +56,7 @@ static inline unsigned long base() {
 /* 拿void*指针的后32位作为unsigned，这里直接类型转换就是取后32位 */
 #define SHRINK_PTR(p) ((unsigned)(uintptr_t)(p))
 
-/*返回一个unsigned*/
+/*返回一个unsigned，此宏被很多其他宏调用*/
 #define GET(p)       (*(unsigned *)(EXTEND_PTR(p))) 
 
 /*给unsigned的指针，往里放unsigned的值*/
@@ -77,6 +77,7 @@ static inline unsigned long base() {
 
 /* 给unsigned，返回unsigned */
 #define LINK_NEXT_BP(bp)  (GET(bp))
+/* 给unsigned，返回unsigned */
 #define LINK_PREV_PP(pp)  (GET(pp))
 
 /*MEM代表是物理内存上的前一个*/
@@ -91,12 +92,21 @@ void mm_checkheap(int lineno);
 
 static void *root = NULL; /*prol的next*/
 static unsigned prol_bp;
+static unsigned epil_pp;
 
 static void check4bp(unsigned bp) {
     printf("%u\n",bp);
     printf("%u\n",LINK_NEXT_BP(bp));
     printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(bp)));
     printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(LINK_NEXT_BP(bp))));
+    return;
+}
+
+static void check4pp(unsigned pp) {
+    printf("%u\n",pp);
+    printf("%u\n",LINK_PREV_PP(pp));
+    printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(pp)));
+    printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(LINK_PREV_PP(pp))));
     return;
 }
 
@@ -173,7 +183,7 @@ static unsigned coalesce(unsigned bp) {
         size += GET_SIZE(MEM_PREV_FP(bp));
         PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc)); /*等价于pack 0b10或0b00*/
         bp = FP2BP(MEM_PREV_FP(bp));
-        printf("%u\n",bp);
+        //printf("%u\n",bp);
         link_delete(bp);
         PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
         link_LIFOinsert(bp);
@@ -211,21 +221,23 @@ static unsigned extend_heap(size_t words) {
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
-    
+    epil_pp = BP2PP(epil_pp);
     
     /*新的epil，MEM上前一个是free的*/
     PUT(BP2P(epil_bp),0b01);
-    PUT(epil_bp,0);
+    PUT(epil_bp,prol_bp);
     PUT(prev_bp,epil_bp);
-    PUT(BP2PP(epil_bp),prev_pp);
+    PUT(epil_pp,prev_pp);
+    PUT(BP2PP(prol_bp),epil_pp);
 
     /*新的块*/
     PUT(BP2P(bp),PACK(size, 2*prev_alloc));
     PUT(BP2FP(bp),PACK(size, 2*prev_alloc));
 
+
+
     /* 插入这个bp，新的块插在链表开始处 */
     link_LIFOinsert(bp);
-    mm_checkheap(__LINE__);
     
     return coalesce(bp);
 }
@@ -233,7 +245,7 @@ static unsigned extend_heap(size_t words) {
 /* first fit，成功返回unsigned bp，否则返回0*/
 static unsigned find_fit(unsigned asize) {
     unsigned bp;
-    for (bp = prol_bp; bp != 0; bp = LINK_NEXT_BP(bp)) {
+    for (bp = prol_bp; bp != prol_bp; bp = LINK_NEXT_BP(bp)) {
         if (asize <= GET_SIZE(BP2P(bp))) {
             return bp;
         }
@@ -292,14 +304,14 @@ int mm_init(void)
 
     PUT(tmp_root,0b01); /* prologue header */
     PUT(tmp_root+WSIZE,tmp_root+4*WSIZE); /* prologue bp */
-    PUT(tmp_root+2*WSIZE,0); /* prologue pp */
+    PUT(tmp_root+2*WSIZE,tmp_root+5*WSIZE); /* prologue pp */
     PUT(tmp_root+3*WSIZE,0b11); /* epilogue header*/
-    PUT(tmp_root+4*WSIZE,0); /* epilogue bp*/
+    PUT(tmp_root+4*WSIZE,tmp_root+WSIZE); /* epilogue bp*/
     PUT(tmp_root+5*WSIZE,tmp_root+2*WSIZE); /* epilogue pp*/
 
     root = root + WSIZE;
     prol_bp = SHRINK_PTR(root);
-
+    epil_pp = tmp_root+5*WSIZE;
 
 
     extend_heap(CHUNKSIZE/WSIZE);
@@ -371,17 +383,20 @@ void *malloc (size_t size) {
  */
 void free(void* ptr) {
     dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
-    mm_checkheap(__LINE__);
+    //mm_checkheap(__LINE__);
 
     unsigned bp = SHRINK_PTR(ptr);
     unsigned size = GET_SIZE(BP2P(bp));
-    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
+    unsigned mem_next_size = GET_SIZE(BP2P(MEM_NEXT_BP(bp)));
+    unsigned mem_next_alloc = CUR_ALLOC(BP2P(MEM_NEXT_BP(bp)));
+    unsigned mem_prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
     // if (root == NULL){
     //     mm_init();
     // }
 
-    PUT(BP2P(bp), PACK(size,2*prev_alloc)); /*这里需要清除一下，因为后面coalesce有可能直接返回bp*/
+    PUT(BP2P(bp), PACK(size,2*mem_prev_alloc)); /*把当前块末尾的设成0*/
+    PUT(BP2P(MEM_NEXT_BP(bp)),PACK(mem_next_size,mem_next_alloc));
     link_LIFOinsert(bp);
 
     coalesce(bp);
@@ -459,22 +474,38 @@ they match.
 – All blocks in each list bucket fall within bucket size range (segregated list)
  */
 void mm_checkheap(int lineno) {
-    //printf("line:%d checkheap\n",lineno);
-    // printf("mem_heap_lo:%p\n",mem_heap_lo());
-    // printf("mem_heap_hi:%p\n",mem_heap_hi());
-    //int i = 0;
-    for (unsigned bp = prol_bp;bp != 0;bp = LINK_NEXT_BP(bp)) {
-        //i ++;
-        printf("line:%d ... %u\n",lineno,bp);
+    //for (unsigned bp = prol_bp;)
+
+
+    unsigned iter_free_block = 0;
+    unsigned trav_free_block = 0;
+    unsigned epil_pp = LINK_PREV_PP(BP2PP(prol_bp));
+    printf("%d %d\n",epil_pp,LINK_PREV_PP(epil_pp));
+
+    for (unsigned bp = LINK_NEXT_BP(prol_bp);bp != prol_bp;bp = LINK_NEXT_BP(bp)) {
+        iter_free_block ++;
+        //dbg_printf("line:%d ... %u\n",lineno,bp);
+        unsigned pp = BP2PP(bp);
+        unsigned next_bp = LINK_NEXT_BP(bp);
+        unsigned next_pp = BP2PP(next_bp);
+
         if (!in_heap(EXTEND_PTR(bp))) {
             printf("line:%d checkheap: %d not in heap\n",lineno,bp);
-            break;
         }
+
         if ((bp!=prol_bp) && (!aligned(EXTEND_PTR(bp)))) {
             printf("line:%d checkheap: %d not aligned\n",lineno,bp);
-            break;
         }
-        //if (i>5) break;
+
+        if (LINK_PREV_PP(next_pp) != pp) {
+            printf("line:%d checkheap: %d not consistent\n",lineno,bp);
+        }
+    }
+    for (unsigned pp = LINK_PREV_PP(epil_pp);pp != epil_pp;pp = LINK_PREV_PP(pp)) {
+        trav_free_block ++;
+    }
+    if (trav_free_block != iter_free_block) {
+        printf("line:%d checkheap: trav != iter,%d,%d\n",lineno,trav_free_block,iter_free_block);
     }
     return;
 }
