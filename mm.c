@@ -184,6 +184,7 @@ static void set_mem_next_alloc0(unsigned bp) {
     }
 }
 
+/*返回的为DSIZE的倍数*/
 static size_t round_size(size_t size) {
     size_t asize;
     /* 空闲块最小16byte=2*DSIZE，最多能存12byte=3*WSIZE */
@@ -260,11 +261,8 @@ static unsigned coalesce(unsigned bp) {
 }
 
 /* 新申请的块逻辑上放在链表最开始处 */
-static unsigned extend_heap(size_t words) {
+static unsigned extend_heap(unsigned size) {
     //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
-
-    /* Allocate an even number of words to maintain alignment */
-    size_t size = (words % 2) ? (words+1) * WSIZE : words * WSIZE; 
 
     /*在这开辟新的堆*/
     unsigned temp_p = SHRINK_PTR(mem_sbrk(size)); 
@@ -363,7 +361,7 @@ int mm_init(void)
     prol_bp = tmp_root + WSIZE;
     epil_bp = tmp_root + 4*WSIZE;
 
-    extend_heap(CHUNKSIZE/WSIZE);
+    extend_heap(CHUNKSIZE);
 
     //mm_checkheap(__LINE__);
 
@@ -405,7 +403,7 @@ void *malloc (size_t size) {
 
         /* No fit found. Get more memory and place the block */
         extend_size = MAX(asize,CHUNKSIZE);                 
-        if ((bp = extend_heap(extend_size/WSIZE)) == 0) {  
+        if ((bp = extend_heap(extend_size)) == 0) {  
             return NULL;    
         }
 
@@ -503,6 +501,7 @@ void *realloc(void *oldptr, size_t size) {
 
     //     free(old_bp);
     // }
+
     unsigned old_bp = SHRINK_PTR(oldptr);
     void* newptr = malloc(size);
     unsigned oldsize = GET_SIZE(BP2P(old_bp));
