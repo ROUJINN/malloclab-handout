@@ -90,8 +90,9 @@ static inline unsigned long base() {
 
 void mm_checkheap(int lineno);
 
-static void *root = NULL; /*prol的next*/
+
 static unsigned prol_bp;
+static unsigned epil_bp;
 
 static void check4bp(unsigned bp) {
     printf("%u\n",bp);
@@ -161,16 +162,26 @@ static void link_insert(unsigned bp) {
     return;
 }
 
-/*设置内存上下一个块 为前一个块已经分配*/
-static void set_mem_next_alloc(unsigned bp) {
+/*设置内存上 下一个块 为 前一个块 已经分配*/
+static void set_mem_next_alloc1(unsigned bp) {
     unsigned next_bp = MEM_NEXT_BP(bp);
-    unsigned cur_alloc = CUR_ALLOC(BP2P(next_bp));
-    unsigned cur_size = GET_SIZE(BP2P(next_bp));
-    PUT(BP2P(next_bp),PACK(cur_size,2+cur_alloc));
-    if (!cur_alloc) {
-        PUT(BP2FP(next_bp),PACK(cur_size,2+cur_alloc));
+    unsigned next_alloc = CUR_ALLOC(BP2P(next_bp));
+    unsigned next_size = GET_SIZE(BP2P(next_bp));
+    PUT(BP2P(next_bp),PACK(next_size,2 + next_alloc));
+    if (!next_alloc) {
+        PUT(BP2FP(next_bp),PACK(next_size,2 + next_alloc));
     }
-    
+}
+
+/*设置内存上 下一个块 为 前一个块 未分配*/
+static void set_mem_next_alloc0(unsigned bp) {
+    unsigned next_bp = MEM_NEXT_BP(bp);
+    unsigned next_alloc = CUR_ALLOC(BP2P(next_bp));
+    unsigned next_size = GET_SIZE(BP2P(next_bp));
+    PUT(BP2P(next_bp),PACK(next_size,next_alloc));
+    if (!next_alloc) {
+        PUT(BP2FP(next_bp),PACK(next_size,next_alloc));
+    }
 }
 
 static size_t round_size(size_t size) {
@@ -259,7 +270,7 @@ static unsigned extend_heap(size_t words) {
     unsigned temp_p = SHRINK_PTR(mem_sbrk(size)); 
 
     unsigned bp = temp_p - DSIZE;
-    unsigned epil_bp = bp + (unsigned)size;
+    epil_bp = bp + (unsigned)size;
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
@@ -299,20 +310,21 @@ static void place(unsigned bp, unsigned asize) {
 
     unsigned next_bp = LINK_NEXT_BP(bp);
     unsigned next_pp = BP2PP(next_bp);
-        
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
 
     link_delete(bp);
 
     if ((csize - asize) >= 2*DSIZE) {
-        /*当前块设置为已分配*/
+        /*当前块设置为已分配，内存上下一个块之前的块仍然是free的*/
         PUT(BP2P(bp), PACK(asize, 2*prev_alloc+1));
+
         /*剩下的块设置为空闲块并且插入链表*/
         bp = MEM_NEXT_BP(bp);
         PUT(BP2P(bp), PACK(csize-asize,0b10));
         PUT(BP2FP(bp), PACK(csize-asize,0b10));
 
+        /*插入链表*/
         PUT(prev_bp,bp);
         PUT(bp,next_bp);
         PUT(BP2PP(bp),prev_pp);
@@ -324,7 +336,7 @@ static void place(unsigned bp, unsigned asize) {
         PUT(BP2P(bp), PACK(csize, 2*prev_alloc+1));
 
         /*由于当前块从自由变成了已分配，则内存上下一个块要相应改一下*/
-        set_mem_next_alloc(bp);
+        set_mem_next_alloc1(bp);
     }
 }
 
@@ -336,7 +348,7 @@ int mm_init(void)
     dbg_printf("\n");
     dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
-    root = mem_sbrk(6*WSIZE);
+    void* root = mem_sbrk(6*WSIZE);
 
     unsigned tmp_root = SHRINK_PTR(root);
 
@@ -348,8 +360,8 @@ int mm_init(void)
     PUT(tmp_root+4*WSIZE,tmp_root+WSIZE); /* epilogue bp*/
     PUT(tmp_root+5*WSIZE,tmp_root+2*WSIZE); /* epilogue pp*/
 
-    root = root + WSIZE;
-    prol_bp = SHRINK_PTR(root);
+    prol_bp = tmp_root + WSIZE;
+    epil_bp = tmp_root + 4*WSIZE;
 
     extend_heap(CHUNKSIZE/WSIZE);
 
@@ -412,7 +424,6 @@ void *malloc (size_t size) {
  */
 void free(void* ptr) {
     dbg_printf("line:%d,function:%s,bp:%u\n",__LINE__,__FUNCTION__,SHRINK_PTR(ptr));
-    //printf("%p\n",ptr);
 
     if (ptr == NULL) {
         return;
@@ -420,18 +431,12 @@ void free(void* ptr) {
 
     unsigned bp = SHRINK_PTR(ptr);
     unsigned size = GET_SIZE(BP2P(bp));
-    unsigned mem_next_size = GET_SIZE(BP2P(MEM_NEXT_BP(bp)));
-    unsigned mem_next_alloc = CUR_ALLOC(BP2P(MEM_NEXT_BP(bp)));
     unsigned mem_prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
     PUT(BP2P(bp), PACK(size,2*mem_prev_alloc)); /*把当前块末尾的设成0*/
-    
     PUT(BP2FP(bp), PACK(size,2*mem_prev_alloc));
 
-    PUT(BP2P(MEM_NEXT_BP(bp)),PACK(mem_next_size,mem_next_alloc));
-    if (!mem_next_alloc) {
-        PUT(BP2FP(MEM_NEXT_BP(bp)),PACK(mem_next_size,mem_next_alloc));
-    }
+    set_mem_next_alloc0(bp);
     
     link_LIFOinsert(bp);
 
