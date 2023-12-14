@@ -45,13 +45,9 @@
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(p) (((size_t)(p) + (ALIGNMENT-1)) & ~0x7)
 
-
-static inline unsigned long base() {
-    return ((unsigned long)mem_heap_lo());
-}
-
+static unsigned long base;
 /* 给一个unsigned的指针返回void* */
-#define EXTEND_PTR(p) ((void*)(base() + (unsigned long)(p)))
+#define EXTEND_PTR(p) ((void*)(base + (unsigned long)(p)))
 
 /* 拿void*指针的后32位作为unsigned，这里直接类型转换就是取后32位 */
 #define SHRINK_PTR(p) ((unsigned)(uintptr_t)(p))
@@ -89,7 +85,6 @@ static inline unsigned long base() {
 #define MEM_PREV_FP(bp) ((bp) - DSIZE) 
 
 void mm_checkheap(int lineno);
-
 
 static unsigned prol_bp;
 static unsigned epil_bp;
@@ -330,6 +325,7 @@ int mm_init(void)
     dbg_printf("\n");
     dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
+    base = (unsigned long)mem_heap_lo();
     void* root = mem_sbrk(6*WSIZE);
 
     unsigned tmp_root = SHRINK_PTR(root);
