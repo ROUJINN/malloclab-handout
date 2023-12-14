@@ -17,7 +17,7 @@
 
 /* If you want debugging output, use the following macro.  When you hand
  * in, remove the #define DEBUG line. */
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 # define dbg_printf(...) printf(__VA_ARGS__)
 #else
@@ -223,7 +223,7 @@ static unsigned coalesce(unsigned bp) {
         bp = FP2BP(mem_prev_fp);
         
         link_delete(bp);
-        mm_checkheap(__LINE__);
+        //mm_checkheap(__LINE__);
 
         PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
         PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc));
@@ -353,7 +353,7 @@ int mm_init(void)
 
     extend_heap(CHUNKSIZE/WSIZE);
 
-    mm_checkheap(__LINE__);
+    //mm_checkheap(__LINE__);
 
     return 0;
 }
@@ -384,7 +384,7 @@ void *malloc (size_t size) {
 
         place(bp, req_size);
 
-        mm_checkheap(__LINE__); 
+        //mm_checkheap(__LINE__); 
 
         return EXTEND_PTR(bp);
     }
@@ -401,7 +401,7 @@ void *malloc (size_t size) {
 
         dbg_printf("line:%d,function:%s,req_size:%u,bp_loc:%p\n",__LINE__,__FUNCTION__,req_size,EXTEND_PTR(bp));        
 
-        mm_checkheap(__LINE__);
+        //mm_checkheap(__LINE__);
                               
         return EXTEND_PTR(bp);
     }
@@ -436,7 +436,7 @@ void free(void* ptr) {
     link_LIFOinsert(bp);
 
     coalesce(bp);
-    mm_checkheap(__LINE__);
+    //mm_checkheap(__LINE__);
 
     return;
 }

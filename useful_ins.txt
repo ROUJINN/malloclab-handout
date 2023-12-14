@@ -37,8 +37,10 @@ ppt p63对上面的有介绍
 
 分离适配是最好的，malloc所用的。
 
-./mdriver -D -V -c ./traces/cccp.rep
+./mdriver -D -V -c ./traces/boat-plus.rep
 r -D -V -c -l ./traces/boat.rep
+./mdriver -c ./traces/boat-plus.rep
+./mdriver ./traces/boat-plus.rep
 
 Results for libc malloc:
   valid  util   ops    secs     Kops  trace
@@ -115,7 +117,6 @@ dbg_printf("line:%d,ptr:%p,ptr_value:%u\n",__LINE__,EXTEND_PTR(tmp_root+WSIZE),G
 
 dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
-printf("here?\n");
 
 貌似用环形链表好一点!!
 
