@@ -151,7 +151,6 @@ static void link_LIFOinsert(unsigned bp) {
 static void link_insert(unsigned bp) {
     unsigned next_bp = LINK_NEXT_BP(bp);
     unsigned next_pp = BP2PP(next_bp);
-
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
 
@@ -183,6 +182,22 @@ static void set_mem_next_alloc0(unsigned bp) {
         PUT(BP2FP(next_bp),PACK(next_size,next_alloc));
     }
 }
+
+static void set_cur_alloc1(unsigned bp,unsigned size) {
+    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
+    PUT(BP2P(bp), PACK(size, 2*prev_alloc+1));
+}
+
+static void init_free_block(unsigned bp, unsigned size) {
+    /* 看epil的MEM上前一个是否alloc */
+    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); 
+    /*新的块*/
+    PUT(BP2P(bp),PACK(size, 2*prev_alloc));
+    PUT(BP2FP(bp),PACK(size, 2*prev_alloc));
+    return;
+}
+
+
 
 /*返回的为DSIZE的倍数*/
 static size_t round_size(size_t size) {
@@ -217,8 +232,7 @@ static unsigned coalesce(unsigned bp) {
         size += GET_SIZE(BP2P(MEM_NEXT_BP(bp)));
         link_delete(MEM_NEXT_BP(bp));
 
-        PUT(BP2P(bp), PACK(size, 0b10));
-        PUT(BP2FP(bp), PACK(size, 0b10)); /*注意这里bp前的p的size已经更新了，所以可以直接BP2FP*/
+        init_free_block(bp,size);
 
         return bp;
     }    
@@ -230,15 +244,12 @@ static unsigned coalesce(unsigned bp) {
         link_delete(bp);
         
         size += GET_SIZE(MEM_PREV_FP(bp));
-
-        unsigned mem_prev_fp = MEM_PREV_FP(bp);        
-        bp = FP2BP(mem_prev_fp);
+  
+        bp = FP2BP(MEM_PREV_FP(bp));
         
         link_delete(bp);
-        //mm_checkheap(__LINE__);
 
-        PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
-        PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc));
+        init_free_block(bp,size);
         
         link_LIFOinsert(bp);
         return bp;
@@ -253,9 +264,9 @@ static unsigned coalesce(unsigned bp) {
         link_delete(MEM_NEXT_BP(bp));
         bp = FP2BP(MEM_PREV_FP(bp));
         link_delete(bp);
-        PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
-        PUT(BP2FP(bp), PACK(size, 2*prev_prev_alloc));
+        init_free_block(bp,size);
         link_LIFOinsert(bp);
+        
         return bp;
     }
 }
@@ -269,7 +280,6 @@ static unsigned extend_heap(unsigned size) {
 
     unsigned bp = temp_p - DSIZE;
     epil_bp = bp + (unsigned)size;
-    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
     
@@ -281,10 +291,7 @@ static unsigned extend_heap(unsigned size) {
     PUT(BP2PP(epil_bp),prev_pp);
     PUT(BP2PP(prol_bp),BP2PP(epil_bp));
 
-    /*新的块*/
-    PUT(BP2P(bp),PACK(size, 2*prev_alloc));
-    PUT(BP2FP(bp),PACK(size, 2*prev_alloc));
-
+    init_free_block(bp,size);
     /* 插入这个bp，新的块插在链表开始处 */
     link_LIFOinsert(bp);
 
@@ -304,7 +311,6 @@ static unsigned find_fit(unsigned asize) {
 
 static void place(unsigned bp, unsigned asize) {
     unsigned csize = GET_SIZE(BP2P(bp));
-    unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
     unsigned next_bp = LINK_NEXT_BP(bp);
     unsigned next_pp = BP2PP(next_bp);
@@ -315,14 +321,14 @@ static void place(unsigned bp, unsigned asize) {
 
     if ((csize - asize) >= 2*DSIZE) {
         /*当前块设置为已分配，内存上下一个块之前的块仍然是free的*/
-        PUT(BP2P(bp), PACK(asize, 2*prev_alloc+1));
+        set_cur_alloc1(bp,asize);
 
         /*剩下的块设置为空闲块并且插入链表*/
         bp = MEM_NEXT_BP(bp);
         PUT(BP2P(bp), PACK(csize-asize,0b10));
         PUT(BP2FP(bp), PACK(csize-asize,0b10));
 
-        /*插入链表*/
+        /*插入链表，这里并不好单独弄个函数，因为bp已经删了*/
         PUT(prev_bp,bp);
         PUT(bp,next_bp);
         PUT(BP2PP(bp),prev_pp);
@@ -331,7 +337,7 @@ static void place(unsigned bp, unsigned asize) {
 
     else {
         /*当前块设置为已分配*/
-        PUT(BP2P(bp), PACK(csize, 2*prev_alloc+1));
+        set_cur_alloc1(bp,csize);
 
         /*由于当前块从自由变成了已分配，则内存上下一个块要相应改一下*/
         set_mem_next_alloc1(bp);
@@ -429,10 +435,8 @@ void free(void* ptr) {
 
     unsigned bp = SHRINK_PTR(ptr);
     unsigned size = GET_SIZE(BP2P(bp));
-    unsigned mem_prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
-    PUT(BP2P(bp), PACK(size,2*mem_prev_alloc)); /*把当前块末尾的设成0*/
-    PUT(BP2FP(bp), PACK(size,2*mem_prev_alloc));
+    init_free_block(bp,size);
 
     set_mem_next_alloc0(bp);
     
@@ -467,14 +471,12 @@ void *realloc(void *oldptr, size_t size) {
 
     // unsigned old_bp = SHRINK_PTR(oldptr);
     // unsigned old_size = GET_SIZE(BP2P(old_bp));
-    // unsigned new_size = (unsigned) size;
-    // unsigned epil_bp = PP2BP(LINK_PREV_PP(BP2PP(prol_bp)));
+    // unsigned new_size = (unsigned)round_size(size);
 
     // if (new_size <= old_size) {
     //     if (old_size - new_size >= 2*DSIZE) {
     //         /*改变当前块的大小，不变后两位*/
     //         PUT(BP2P(bp), );
-    //         (GET(p) & 0b11) + old_size - new_size
     //         /*剩下的块设置为空闲块并且插入链表*/
     //         bp = MEM_NEXT_BP(bp);
     //         PUT(BP2P(bp), PACK(csize-asize,0b10));
