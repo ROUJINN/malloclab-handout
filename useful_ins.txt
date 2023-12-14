@@ -37,7 +37,8 @@ ppt p63对上面的有介绍
 
 分离适配是最好的，malloc所用的。
 
-./mdriver -D -V -c ./traces/bash.rep
+./mdriver -D -V -c ./traces/cccp.rep
+r -D -V -c -l ./traces/boat.rep
 
 Results for libc malloc:
   valid  util   ops    secs     Kops  trace

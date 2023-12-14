@@ -173,6 +173,19 @@ static void set_mem_next_alloc(unsigned bp) {
     
 }
 
+static size_t round_size(size_t size) {
+    size_t asize;
+    /* 空闲块最小16byte=2*DSIZE，最多能存12byte=3*WSIZE */
+    if (size <= 3*WSIZE) {
+        asize = 2*DSIZE;
+    }
+    /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
+    else {
+        asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); 
+    }
+    return asize;
+}
+
 /*要合并，一定是空闲块合并，空闲块一定在链表中*/
 static unsigned coalesce(unsigned bp) {
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
@@ -358,14 +371,7 @@ void *malloc (size_t size) {
     if (size == 0)
         return NULL;
     
-    /* 空闲块最小16byte=2*DSIZE，最多能存12byte=3*WSIZE */
-    if (size <= 3*WSIZE) {
-        asize = 2*DSIZE;
-    }
-    /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
-    else {
-        asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); 
-    }
+    asize = round_size(size);
 
     if (asize >=  HEAPSIZE) {
         printf("overfull heapsize\n");
@@ -406,7 +412,7 @@ void *malloc (size_t size) {
  */
 void free(void* ptr) {
     dbg_printf("line:%d,function:%s,bp:%u\n",__LINE__,__FUNCTION__,SHRINK_PTR(ptr));
-    printf("%p\n",ptr);
+    //printf("%p\n",ptr);
 
     if (ptr == NULL) {
         return;
@@ -439,23 +445,70 @@ void free(void* ptr) {
  * realloc - you may want to look at mm-naive.c
  */
 void *realloc(void *oldptr, size_t size) {
-    // size_t oldsize;
-    // void *newptr;
 
-    // /* If size == 0 then this is just free, and we return NULL. */
-    // if(size == 0) {
-    //     free(oldptr);
-    //     return 0;
+    if (size >=  HEAPSIZE) {
+        printf("overfull heapsize\n");
+        return NULL;
+    }
+
+    /* If size == 0 then this is just free, and we return NULL. */
+    if(size == 0) {
+        free(oldptr);
+        return NULL;
+    }
+
+    /* If oldptr is NULL, then this is just malloc. */
+    if(oldptr == NULL) {
+        return malloc(size);
+    }
+
+    // unsigned old_bp = SHRINK_PTR(oldptr);
+    // unsigned old_size = GET_SIZE(BP2P(old_bp));
+    // unsigned new_size = (unsigned) size;
+    // unsigned epil_bp = PP2BP(LINK_PREV_PP(BP2PP(prol_bp)));
+
+    // if (new_size <= old_size) {
+    //     if (old_size - new_size >= 2*DSIZE) {
+    //         /*改变当前块的大小，不变后两位*/
+    //         PUT(BP2P(bp), );
+    //         (GET(p) & 0b11) + old_size - new_size
+    //         /*剩下的块设置为空闲块并且插入链表*/
+    //         bp = MEM_NEXT_BP(bp);
+    //         PUT(BP2P(bp), PACK(csize-asize,0b10));
+    //         PUT(BP2FP(bp), PACK(csize-asize,0b10));
+
+    //         link_LIFOinsert(bp);
+    //         /*设置内存上后一个块的pre_alloc*/
+    //     }
+    //     else {
+
+    //     }
+        
+    //     PUT(old_bp,)
+        
     // }
+    // else if (MEM_NEXT_BP(bp) == epil_bp) {
 
-    // /* If oldptr is NULL, then this is just malloc. */
-    // if(oldptr == NULL) {
-    //     return malloc(size);
     // }
-    // return NULL;
+    // else {
+    //     void*bp = malloc(new_size);
+    //     unsigned bp = SHRINK_PTR(bp);
+        
+    //     memcpy(bp, oldptr, oldsize);
 
-    /*要什么复制数据之类的，先不管*/
-    return NULL;
+    //     free(old_bp);
+    // }
+    unsigned old_bp = SHRINK_PTR(oldptr);
+    void* newptr = malloc(size);
+    unsigned oldsize = GET_SIZE(BP2P(old_bp));
+    unsigned newsize = (unsigned) size;
+    if(newsize < oldsize) oldsize = newsize;
+    memcpy(newptr, oldptr, oldsize);
+
+    /* Free the old block. */
+    free(oldptr);
+
+    return newptr;
 }
 
 /*
@@ -507,7 +560,7 @@ they match.
 – All blocks in each list bucket fall within bucket size range (segregated list)
  */
 void mm_checkheap(int lineno) {
-    printf("heapsize:%lu line:%d\n",mem_heapsize(),lineno);
+    dbg_printf("heapsize:%lu line:%d\n",mem_heapsize(),lineno);
 
     unsigned iter_free_block = 0;
     unsigned trav_free_block = 0;
