@@ -56,7 +56,7 @@ static inline unsigned long base() {
 /* 拿void*指针的后32位作为unsigned，这里直接类型转换就是取后32位 */
 #define SHRINK_PTR(p) ((unsigned)(uintptr_t)(p))
 
-/*返回一个unsigned，此宏被很多其他宏调用*/
+/*给一个unsigned，返回一个unsigned，此宏被很多其他宏调用*/
 #define GET(p)       (*(unsigned *)(EXTEND_PTR(p))) 
 
 /*给unsigned的指针，往里放unsigned的值*/
@@ -92,7 +92,6 @@ void mm_checkheap(int lineno);
 
 static void *root = NULL; /*prol的next*/
 static unsigned prol_bp;
-static unsigned epil_pp;
 
 static void check4bp(unsigned bp) {
     printf("%u\n",bp);
@@ -107,7 +106,19 @@ static void check4pp(unsigned pp) {
     printf("%u\n",LINK_PREV_PP(pp));
     printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(pp)));
     printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(LINK_PREV_PP(pp))));
+
     return;
+}
+
+static void checkbp_content(unsigned bp) {
+    printf("bp:%u\n",bp);
+    printf("*p:%u\n",GET(BP2P(bp)));
+    printf("*bp:%u\n",GET(bp));
+    printf("*pp:%u\n",GET(BP2PP(bp)));
+    if ((bp != prol_bp) && (bp!=PP2BP(LINK_PREV_PP(BP2PP(prol_bp))))) {
+        printf("*fp:%u\n",GET(BP2FP(bp)));
+    }
+    printf("------------\n");
 }
 
 static void link_delete(unsigned bp) {
@@ -126,7 +137,7 @@ static void link_LIFOinsert(unsigned bp) {
     //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
     unsigned next_bp = LINK_NEXT_BP(prol_bp);
     unsigned next_pp = BP2PP(next_bp);    
-    unsigned prev_bp = SHRINK_PTR(prol_bp);
+    unsigned prev_bp = prol_bp;
     unsigned prev_pp = BP2PP(prev_bp);
 
     PUT(prev_bp,bp);
@@ -148,6 +159,18 @@ static void link_insert(unsigned bp) {
     PUT(BP2PP(bp),prev_pp);
     PUT(next_pp,BP2PP(bp));
     return;
+}
+
+/*设置内存上下一个块 为前一个块已经分配*/
+static void set_mem_next_alloc(unsigned bp) {
+    unsigned next_bp = MEM_NEXT_BP(bp);
+    unsigned cur_alloc = CUR_ALLOC(BP2P(next_bp));
+    unsigned cur_size = GET_SIZE(BP2P(next_bp));
+    PUT(BP2P(next_bp),PACK(cur_size,2+cur_alloc));
+    if (!cur_alloc) {
+        PUT(BP2FP(next_bp),PACK(cur_size,2+cur_alloc));
+    }
+    
 }
 
 /*要合并，一定是空闲块合并，空闲块一定在链表中*/
@@ -180,12 +203,18 @@ static unsigned coalesce(unsigned bp) {
         dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
         link_delete(bp);
+        
         size += GET_SIZE(MEM_PREV_FP(bp));
-        PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc)); /*等价于pack 0b10或0b00*/
-        bp = FP2BP(MEM_PREV_FP(bp));
-        //printf("%u\n",bp);
+
+        unsigned mem_prev_fp = MEM_PREV_FP(bp);        
+        bp = FP2BP(mem_prev_fp);
+        
         link_delete(bp);
+        mm_checkheap(__LINE__);
+
         PUT(BP2P(bp),PACK(size, 2*prev_prev_alloc));
+        PUT(BP2FP(bp),PACK(size, 2*prev_prev_alloc));
+        
         link_LIFOinsert(bp);
         return bp;
     }
@@ -221,31 +250,29 @@ static unsigned extend_heap(size_t words) {
     unsigned prev_alloc = MEM_PREV_ALLOC(BP2P(bp)); /* 看epil的MEM上前一个是否alloc */
     unsigned prev_pp = LINK_PREV_PP(BP2PP(bp));
     unsigned prev_bp = PP2BP(prev_pp);
-    epil_pp = BP2PP(epil_pp);
+    
     
     /*新的epil，MEM上前一个是free的*/
     PUT(BP2P(epil_bp),0b01);
     PUT(epil_bp,prol_bp);
     PUT(prev_bp,epil_bp);
-    PUT(epil_pp,prev_pp);
-    PUT(BP2PP(prol_bp),epil_pp);
+    PUT(BP2PP(epil_bp),prev_pp);
+    PUT(BP2PP(prol_bp),BP2PP(epil_bp));
 
     /*新的块*/
     PUT(BP2P(bp),PACK(size, 2*prev_alloc));
     PUT(BP2FP(bp),PACK(size, 2*prev_alloc));
 
-
-
     /* 插入这个bp，新的块插在链表开始处 */
     link_LIFOinsert(bp);
-    
+
     return coalesce(bp);
 }
 
 /* first fit，成功返回unsigned bp，否则返回0*/
 static unsigned find_fit(unsigned asize) {
     unsigned bp;
-    for (bp = prol_bp; bp != prol_bp; bp = LINK_NEXT_BP(bp)) {
+    for (bp = LINK_NEXT_BP(prol_bp); bp != prol_bp; bp = LINK_NEXT_BP(bp)) {
         if (asize <= GET_SIZE(BP2P(bp))) {
             return bp;
         }
@@ -266,23 +293,25 @@ static void place(unsigned bp, unsigned asize) {
     link_delete(bp);
 
     if ((csize - asize) >= 2*DSIZE) {
+        /*当前块设置为已分配*/
         PUT(BP2P(bp), PACK(asize, 2*prev_alloc+1));
+        /*剩下的块设置为空闲块并且插入链表*/
         bp = MEM_NEXT_BP(bp);
         PUT(BP2P(bp), PACK(csize-asize,0b10));
         PUT(BP2FP(bp), PACK(csize-asize,0b10));
 
-        /*插入链表*/
         PUT(prev_bp,bp);
         PUT(bp,next_bp);
         PUT(BP2PP(bp),prev_pp);
         PUT(next_pp,BP2PP(bp));
-
-        //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
     }
 
     else {
+        /*当前块设置为已分配*/
         PUT(BP2P(bp), PACK(csize, 2*prev_alloc+1));
-        PUT(BP2FP(bp), PACK(csize, 2*prev_alloc+1));
+
+        /*由于当前块从自由变成了已分配，则内存上下一个块要相应改一下*/
+        set_mem_next_alloc(bp);
     }
 }
 
@@ -293,16 +322,13 @@ int mm_init(void)
 {
     dbg_printf("\n");
     dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
-    //dbg_printf("mem_heap_lo:%p\n",mem_heap_lo());
 
     root = mem_sbrk(6*WSIZE);
-
-    //dbg_printf("root:%p\n",root);
-    
 
     unsigned tmp_root = SHRINK_PTR(root);
 
     PUT(tmp_root,0b01); /* prologue header */
+
     PUT(tmp_root+WSIZE,tmp_root+4*WSIZE); /* prologue bp */
     PUT(tmp_root+2*WSIZE,tmp_root+5*WSIZE); /* prologue pp */
     PUT(tmp_root+3*WSIZE,0b11); /* epilogue header*/
@@ -311,11 +337,10 @@ int mm_init(void)
 
     root = root + WSIZE;
     prol_bp = SHRINK_PTR(root);
-    epil_pp = tmp_root+5*WSIZE;
-
 
     extend_heap(CHUNKSIZE/WSIZE);
-    //dbg_printf("line:%d,mem_heap_hi:%p\n",__LINE__,mem_heap_hi());
+
+    mm_checkheap(__LINE__);
 
     return 0;
 }
@@ -324,26 +349,22 @@ int mm_init(void)
  * malloc
  */
 void *malloc (size_t size) {
-    //check4bp(prol_bp);
     
     size_t asize;
     size_t extend_size;
     unsigned bp,req_size;
-
-    // if (root == NULL){
-    //     mm_init();
-    // }
     
     /* Ignore spurious requests */
     if (size == 0)
         return NULL;
     
-    /*空闲块最小16byte*/
+    /* 空闲块最小16byte=2*DSIZE，最多能存12byte=3*WSIZE */
     if (size <= 3*WSIZE) {
         asize = 2*DSIZE;
     }
+    /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
     else {
-        asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); /*向上舍入到DSIZE的倍数，+WSIZE是因为已分配的块需要一个header*/
+        asize = DSIZE * ((size + WSIZE + (DSIZE-1)) / DSIZE); 
     }
 
     if (asize >=  HEAPSIZE) {
@@ -353,27 +374,29 @@ void *malloc (size_t size) {
 
     req_size = (unsigned)(asize);
     if ((bp = find_fit(req_size)) != 0u) {  
-        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
+        dbg_printf("line:%d,function:%s,req_size:%u,bp_loc:%p\n",__LINE__,__FUNCTION__,req_size,EXTEND_PTR(bp));
 
-        place(bp, req_size);     
-        //check4bp(prol_bp);             
+        place(bp, req_size);
+
+        mm_checkheap(__LINE__); 
+
         return EXTEND_PTR(bp);
     }
 
     else {
-        dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
         /* No fit found. Get more memory and place the block */
         extend_size = MAX(asize,CHUNKSIZE);                 
         if ((bp = extend_heap(extend_size/WSIZE)) == 0) {  
             return NULL;    
         }
-        // printf("fucking bug\n");
-        // mm_checkheap(__LINE__);
-        // printf("checked\n");                               
+
         place(bp, asize);
-        // mm_checkheap(__LINE__);
-        // printf("checked\n");                                 
+
+        dbg_printf("line:%d,function:%s,req_size:%u,bp_loc:%p\n",__LINE__,__FUNCTION__,req_size,EXTEND_PTR(bp));        
+
+        mm_checkheap(__LINE__);
+                              
         return EXTEND_PTR(bp);
     }
 }
@@ -382,8 +405,12 @@ void *malloc (size_t size) {
  * free
  */
 void free(void* ptr) {
-    dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
-    //mm_checkheap(__LINE__);
+    dbg_printf("line:%d,function:%s,bp:%u\n",__LINE__,__FUNCTION__,SHRINK_PTR(ptr));
+    printf("%p\n",ptr);
+
+    if (ptr == NULL) {
+        return;
+    }
 
     unsigned bp = SHRINK_PTR(ptr);
     unsigned size = GET_SIZE(BP2P(bp));
@@ -391,15 +418,21 @@ void free(void* ptr) {
     unsigned mem_next_alloc = CUR_ALLOC(BP2P(MEM_NEXT_BP(bp)));
     unsigned mem_prev_alloc = MEM_PREV_ALLOC(BP2P(bp));
 
-    // if (root == NULL){
-    //     mm_init();
-    // }
-
     PUT(BP2P(bp), PACK(size,2*mem_prev_alloc)); /*把当前块末尾的设成0*/
+    
+    PUT(BP2FP(bp), PACK(size,2*mem_prev_alloc));
+
     PUT(BP2P(MEM_NEXT_BP(bp)),PACK(mem_next_size,mem_next_alloc));
+    if (!mem_next_alloc) {
+        PUT(BP2FP(MEM_NEXT_BP(bp)),PACK(mem_next_size,mem_next_alloc));
+    }
+    
     link_LIFOinsert(bp);
 
     coalesce(bp);
+    mm_checkheap(__LINE__);
+
+    return;
 }
 
 /*
@@ -474,17 +507,19 @@ they match.
 – All blocks in each list bucket fall within bucket size range (segregated list)
  */
 void mm_checkheap(int lineno) {
-    //for (unsigned bp = prol_bp;)
-
+    printf("heapsize:%lu line:%d\n",mem_heapsize(),lineno);
 
     unsigned iter_free_block = 0;
     unsigned trav_free_block = 0;
     unsigned epil_pp = LINK_PREV_PP(BP2PP(prol_bp));
-    printf("%d %d\n",epil_pp,LINK_PREV_PP(epil_pp));
 
+    /*检查序言*/
+    //checkbp_content(prol_bp);
+
+    /*链表，往后遍历*/
     for (unsigned bp = LINK_NEXT_BP(prol_bp);bp != prol_bp;bp = LINK_NEXT_BP(bp)) {
         iter_free_block ++;
-        //dbg_printf("line:%d ... %u\n",lineno,bp);
+        //checkbp_content(bp);
         unsigned pp = BP2PP(bp);
         unsigned next_bp = LINK_NEXT_BP(bp);
         unsigned next_pp = BP2PP(next_bp);
@@ -493,20 +528,28 @@ void mm_checkheap(int lineno) {
             printf("line:%d checkheap: %d not in heap\n",lineno,bp);
         }
 
-        if ((bp!=prol_bp) && (!aligned(EXTEND_PTR(bp)))) {
-            printf("line:%d checkheap: %d not aligned\n",lineno,bp);
-        }
-
         if (LINK_PREV_PP(next_pp) != pp) {
             printf("line:%d checkheap: %d not consistent\n",lineno,bp);
         }
     }
+
+    /*链表，往前遍历*/
     for (unsigned pp = LINK_PREV_PP(epil_pp);pp != epil_pp;pp = LINK_PREV_PP(pp)) {
         trav_free_block ++;
     }
+
     if (trav_free_block != iter_free_block) {
         printf("line:%d checkheap: trav != iter,%d,%d\n",lineno,trav_free_block,iter_free_block);
     }
+
+    /*内存上一个个往后遍历*/
+    for (unsigned bp = prol_bp + 3*WSIZE; bp!=PP2BP(epil_pp) ;bp=MEM_NEXT_BP(bp)) {
+        //dbg_printf(" ... %u\n",bp);
+        if (!aligned(EXTEND_PTR(bp))) {
+            printf("line:%d checkheap: %d not aligned\n",lineno,bp);
+        }
+    }
     return;
+
 }
 

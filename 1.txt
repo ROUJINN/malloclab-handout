@@ -2,119 +2,1400 @@ Measuring performance with a cycle counter.
 Processor clock rate ~= 2000.0 MHz
 
 Testing mm malloc
-Reading tracefile: ./traces/alaska.rep
+Reading tracefile: ./traces/bash.rep
 Checking mm_malloc for correctness, 
-line:294,function:mm_init
-line:160,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:166,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:194,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:166,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:363,function:mm_malloc
-line:179,function:coalesce
-line:384,function:mm_free
-line:160,function:coalesce
-line:384,function:mm_free
-line:166,function:coalesce
-line:384,function:mm_free
-line:194,function:coalesce
+line:324,function:mm_init
+line:184,function:coalesce
+heapsize:4120 line:343
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000010
+heapsize:4120 line:381
+line:408,function:mm_free,bp:16
+0x800000010
+line:190,function:coalesce
+heapsize:4120 line:433
+line:377,function:mm_malloc,req_size:128,bp_loc:0x800000010
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000090
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:784,bp_loc:0x8000000a0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:120,bp_loc:0x8000003b0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:960,bp_loc:0x800000428
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:224,bp_loc:0x8000007e8
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:440,bp_loc:0x8000008c8
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:112,bp_loc:0x800000a80
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:96,bp_loc:0x800000af0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:128,bp_loc:0x800000b50
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:176,bp_loc:0x800000bd0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:112,bp_loc:0x800000c80
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:88,bp_loc:0x800000cf0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:200,bp_loc:0x800000d48
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e10
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e20
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e30
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e40
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e50
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e60
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e70
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e80
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e90
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ea0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000eb0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ec0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ed0
+heapsize:4120 line:381
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ee0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800000ef0
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000f18
+heapsize:4120 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000f28
+heapsize:4120 line:381
+line:203,function:coalesce
+heapsize:8216 line:213
+line:396,function:mm_malloc,req_size:488,bp_loc:0x800000f38
+heapsize:8216 line:398
+line:377,function:mm_malloc,req_size:488,bp_loc:0x800001120
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:576,bp_loc:0x800001308
+heapsize:8216 line:381
+line:408,function:mm_free,bp:4872
+0x800001308
+line:190,function:coalesce
+heapsize:8216 line:433
+line:377,function:mm_malloc,req_size:1272,bp_loc:0x800001308
+heapsize:8216 line:381
+line:408,function:mm_free,bp:4872
+0x800001308
+line:190,function:coalesce
+heapsize:8216 line:433
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800001308
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800001328
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001348
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800001360
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001380
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800001398
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000013c8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:520,bp_loc:0x8000013e0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000015e8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:520,bp_loc:0x800001600
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001808
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:520,bp_loc:0x800001820
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001a28
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001a60
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001a70
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001a80
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800001aa8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001ac8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001af0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001b28
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001b38
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001b48
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001b70
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001b80
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001b98
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001bd0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001be0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001bf0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001c18
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001c30
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001c48
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001c80
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001c90
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001ca0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001cc8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001cd8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001cf0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001d28
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001d38
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001d48
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800001d70
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001d90
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001db8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001df0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800001e08
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001e20
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001e48
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:64,bp_loc:0x800001e80
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800001ec0
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001ef8
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800001f08
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800001f18
+heapsize:8216 line:381
+line:377,function:mm_malloc,req_size:112,bp_loc:0x800001f40
+heapsize:8216 line:381
+line:203,function:coalesce
+heapsize:12312 line:213
+line:396,function:mm_malloc,req_size:120,bp_loc:0x800001fb0
+heapsize:12312 line:398
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800002028
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002060
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002070
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800002080
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:88,bp_loc:0x8000020a8
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:96,bp_loc:0x800002100
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800002160
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002198
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000021a8
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000021b8
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000021e0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000021f8
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800002218
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002250
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002260
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800002270
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800002298
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000022b8
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000022e0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002318
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002328
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800002338
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002360
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800002370
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800002388
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000023c0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000023e0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800002400
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:80,bp_loc:0x800002428
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:104,bp_loc:0x800002478
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000024e0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002518
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002528
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800002538
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800002560
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800002570
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800002588
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000025c0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000025d0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000025e0
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:1264,bp_loc:0x800002608
+heapsize:12312 line:381
+line:377,function:mm_malloc,req_size:1272,bp_loc:0x800002af8
+heapsize:12312 line:381
+line:203,function:coalesce
+heapsize:16408 line:213
+line:396,function:mm_malloc,req_size:56,bp_loc:0x800002ff0
+heapsize:16408 line:398
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003028
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003040
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003058
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003080
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x8000030a0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000030d0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003108
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003118
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003128
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:144,bp_loc:0x800003150
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:152,bp_loc:0x8000031e0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003278
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000032b0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000032c0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000032d0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000032f8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003318
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003340
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003378
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003388
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003398
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:80,bp_loc:0x8000033c0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:80,bp_loc:0x800003410
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003460
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003498
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000034a8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000034b8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000034e0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000034f0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003508
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003540
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003550
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003560
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003588
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003598
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000035b0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000035e8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000035f8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003608
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003630
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800003658
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003688
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000036c0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000036d0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000036e0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003708
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003718
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003738
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003770
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003780
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003790
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x8000037b8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000037e8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003820
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003858
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003868
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003878
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000038a0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x8000038c8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000038f8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003930
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003940
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003950
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003978
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003988
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003998
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000039d0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000039e0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000039f0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003a18
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003a28
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003a40
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003a78
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003a88
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003a98
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003ac0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003ad0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003ae0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003b18
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003b28
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003b38
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003b60
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003b80
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003ba0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003bd8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003bf0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003c08
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800003c30
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:64,bp_loc:0x800003c60
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003ca0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003cd8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003ce8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003cf8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003d20
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003d40
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003d68
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003da0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003db0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003dc0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003de8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003e00
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003e20
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003e58
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003e70
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003e88
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003eb0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800003ec0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003ee0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003f18
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003f28
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003f38
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800003f60
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800003f78
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800003fa0
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003fd8
+heapsize:16408 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003fe8
+heapsize:16408 line:381
+line:203,function:coalesce
+heapsize:20504 line:213
+line:396,function:mm_malloc,req_size:40,bp_loc:0x800003ff8
+heapsize:20504 line:398
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800004020
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004040
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:80,bp_loc:0x800004068
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000040b8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000040f0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004100
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004110
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004138
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004170
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004180
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004190
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000041b8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000041c8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004200
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004210
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004220
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004248
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004258
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:216,bp_loc:0x800004280
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:216,bp_loc:0x800004358
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004430
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004468
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004478
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004488
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000044b0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000044c0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000044f8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004508
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004518
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004540
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004550
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004588
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004598
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000045a8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000045d0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000045f0
+heapsize:20504 line:381
+line:408,function:mm_free,bp:14728
+0x800003988
+line:184,function:coalesce
+heapsize:20504 line:433
+line:408,function:mm_free,bp:14712
+0x800003978
+line:190,function:coalesce
+heapsize:20504 line:433
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004600
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003978
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800003988
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004638
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004660
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004670
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000046a8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000046b8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000046c8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000046f0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004700
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004738
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004748
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004758
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004780
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004790
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000047a0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000047d8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000047e8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000047f8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004820
+heapsize:20504 line:381
+line:408,function:mm_free,bp:18320
+0x800004790
+line:184,function:coalesce
+heapsize:20504 line:433
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004830
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004868
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004880
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004898
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000048c0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000048d8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004910
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004928
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004940
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004968
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004990
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000049b8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004790
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000049e0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004a08
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004a18
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004a40
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004a50
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004a78
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004a88
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004ab0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004ac0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800004ae8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004b08
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004b40
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004b50
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004b60
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004b88
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004b98
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004bd0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004be0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004bf0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004c18
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004c28
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004c60
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004c70
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004c80
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004ca8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004ce0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004cf8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004d10
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004d38
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004d70
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800004d88
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004da0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004dc8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004e00
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004e10
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004e20
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004e48
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004e80
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004e90
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004ea0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004ec8
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004f00
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004f10
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004f20
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004f48
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004f80
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800004f90
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800004fa0
+heapsize:20504 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800004fc8
+heapsize:20504 line:381
+line:203,function:coalesce
+heapsize:24600 line:213
+line:396,function:mm_malloc,req_size:24,bp_loc:0x800005000
+heapsize:24600 line:398
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005018
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005030
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005058
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005090
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000050a0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000050b0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000050d8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005100
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005128
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005160
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005170
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005180
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000051a8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000051d0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000051f8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005230
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005240
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005250
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005278
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000052a0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000052c8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005300
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005310
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005320
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005348
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005370
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005398
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000053d0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000053e0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000053f0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005418
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005440
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005468
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000054a0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x8000054b0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000054c0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000054e8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005510
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005538
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005570
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005580
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005590
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000055b8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:520,bp_loc:0x8000055d0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x8000057d8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005810
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005828
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005840
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005868
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:520,bp_loc:0x800005880
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005a88
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005ac0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005ad0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005ae0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005b08
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005b30
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800005b58
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005b88
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005bc0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005bd0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005be0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800005c08
+heapsize:24600 line:381
+line:408,function:mm_free,bp:23384
+0x800005b58
+line:184,function:coalesce
+heapsize:24600 line:433
+line:377,function:mm_malloc,req_size:104,bp_loc:0x800005c38
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005ca0
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005b58
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005b68
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005cd8
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:104,bp_loc:0x800005d00
+heapsize:24600 line:381
+line:408,function:mm_free,bp:23608
+0x800005c38
+line:184,function:coalesce
+heapsize:24600 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005c38
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:552,bp_loc:0x800005d68
+heapsize:24600 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005c48
+heapsize:24600 line:381
+line:203,function:coalesce
+heapsize:28696 line:213
+line:396,function:mm_malloc,req_size:552,bp_loc:0x800005f90
+heapsize:28696 line:398
+line:408,function:mm_free,bp:23624
+0x800005c48
+line:190,function:coalesce
+heapsize:28696 line:433
+line:377,function:mm_malloc,req_size:288,bp_loc:0x8000061b8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800005c48
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005c70
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800005c88
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000062d8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:64,bp_loc:0x8000062f0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006330
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:120,bp_loc:0x800006358
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:96,bp_loc:0x8000063d0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006430
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006450
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800006478
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800006490
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:104,bp_loc:0x8000064a8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:1272,bp_loc:0x800006510
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800006a08
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006a38
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:152,bp_loc:0x800006a60
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006af8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:80,bp_loc:0x800006b20
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800006b70
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800006b88
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800006ba0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006bd8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800006bf8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800006c28
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800006c38
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800006c48
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800006c78
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006c90
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800006cb0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:64,bp_loc:0x800006cc0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006d00
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006d28
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006d48
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006d68
+heapsize:28696 line:381
+line:408,function:mm_free,bp:24464
+0x800005f90
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:25016
+0x8000061b8
+line:203,function:coalesce
+heapsize:28696 line:213
+heapsize:28696 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005f90
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3792
+0x800000ed0
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ed0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005fa0
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3776
+0x800000ec0
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:24464
+0x800005f90
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005f90
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ec0
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3728
+0x800000e90
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:24480
+0x800005fa0
+line:190,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005fa0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005fb0
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3696
+0x800000e70
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:3776
+0x800000ec0
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000ec0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e70
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3760
+0x800000eb0
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:24496
+0x800005fb0
+line:190,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005fb0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800005fc0
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3744
+0x800000ea0
+line:224,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:3696
+0x800000e70
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:0
+(nil)
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000e70
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800005fd0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800000e90
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800000ea8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006008
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800006030
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800006040
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800006078
+heapsize:28696 line:381
+line:408,function:mm_free,bp:23560
+0x800005c08
+line:184,function:coalesce
+heapsize:28696 line:433
+line:408,function:mm_free,bp:24640
+0x800006040
+line:184,function:coalesce
+heapsize:28696 line:433
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800006040
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3880
+0x800000f28
+line:184,function:coalesce
+heapsize:28696 line:433
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800005c08
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000060b0
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000060d8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000f28
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000060f8
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800006060
+heapsize:28696 line:381
+line:408,function:mm_free,bp:3880
+0x800000f28
+line:184,function:coalesce
+heapsize:28696 line:433
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800006120
+heapsize:28696 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800000f28
+heapsize:28696 line:381
+line:408,function:mm_free,bp:24640
+0x800006040
+line:184,function:coalesce
+heapsize:28696 line:433
+line:203,function:coalesce
+heapsize:35720 line:213
+line:396,function:mm_malloc,req_size:7024,bp_loc:0x800006d90
+heapsize:35720 line:398
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800008900
+heapsize:35720 line:381
+line:203,function:coalesce
+heapsize:39816 line:213
+line:396,function:mm_malloc,req_size:2208,bp_loc:0x800008938
+heapsize:39816 line:398
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000091d8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:264,bp_loc:0x8000091f8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:48,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:56,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:64,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:64,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009300
+heapsize:39816 line:381
+line:408,function:mm_free,bp:37632
+0x800009300
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009300
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:504,bp_loc:0x800009328
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009520
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:72,bp_loc:0x800009530
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:72,bp_loc:0x800009578
+heapsize:39816 line:381
+line:408,function:mm_free,bp:38264
+0x800009578
+line:190,function:coalesce
+heapsize:39816 line:433
+line:408,function:mm_free,bp:38192
+0x800009530
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800009530
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009548
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009570
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800009598
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000095b8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000095d0
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000095e8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009610
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009638
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:72,bp_loc:0x800009660
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000096a8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000096d0
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x8000096e8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800009710
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:40,bp_loc:0x800009728
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x800009750
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:120,bp_loc:0x800009770
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:32,bp_loc:0x8000097e8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009808
+heapsize:39816 line:381
+line:408,function:mm_free,bp:38920
+0x800009808
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:24,bp_loc:0x800009808
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:120,bp_loc:0x800009820
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:190,function:coalesce
+heapsize:39816 line:433
+line:377,function:mm_malloc,req_size:16,bp_loc:0x800009898
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:288,bp_loc:0x8000098a8
+heapsize:39816 line:381
+line:377,function:mm_malloc,req_size:24,bp_loc:0x8000099c8
+heapsize:39816 line:381
+line:408,function:mm_free,bp:39064
+0x800009898
+line:184,function:coalesce
+heapsize:39816 line:433
+ERROR [trace ././traces/bash.rep, line 633]: mm_realloc failed.
+
+
+correctness check finished, by running tracefile "./traces/bash.rep".
+ => incorrect.
+
+Terminated with 1 errors
