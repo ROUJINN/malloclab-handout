@@ -3,8 +3,8 @@
 #
 CC = gcc
 #CFLAGS = -Wall -Wextra -Werror -O3 -g -std=gnu99 -DDRIVER -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-comment
-# CFLAGS = -Wall -Wextra -O3 -g -std=gnu99 -DDRIVER -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-comment
-CFLAGS = -Wall -Wextra -O3 -g -pg -std=gnu99 -DDRIVER -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-comment
+CFLAGS = -Wall -Wextra -O3 -g -std=gnu99 -DDRIVER -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-comment
+# CFLAGS = -Wall -Wextra -O3 -g -pg -std=gnu99 -DDRIVER -Wno-unused-function -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-comment
 
 OBJS = mdriver.o mm.o memlib.o fsecs.o fcyc.o clock.o ftimer.o 
 
