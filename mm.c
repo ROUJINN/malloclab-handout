@@ -15,8 +15,6 @@
 #include "mm.h"
 #include "memlib.h"
 
-/* If you want debugging output, use the following macro.  When you hand
- * in, remove the #define DEBUG line. */
 //#define DEBUG
 #ifdef DEBUG
 # define dbg_printf(...) printf(__VA_ARGS__)
@@ -37,7 +35,7 @@
 #define ALIGNMENT 8
 #define WSIZE       4       /* Word and header/footer size (bytes) */ 
 #define DSIZE       8       /* Double word size (bytes) */
-#define CHUNKSIZE  (1u<<15)  /* Extend heap by this amount (bytes) */
+#define CHUNKSIZE  (1u<<13)  /* Extend heap by this amount (bytes) */
 #define HEAPSIZE (1lu<<32) 
 
 #define MAX(x, y) ((x) > (y)? (x) : (y)) 
@@ -88,23 +86,6 @@ void mm_checkheap(int lineno);
 
 static unsigned prol_bp;
 static unsigned epil_bp;
-
-static void check4bp(unsigned bp) {
-    dbg_printf("%u\n",bp);
-    dbg_printf("%u\n",LINK_NEXT_BP(bp));
-    dbg_printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(bp)));
-    dbg_printf("%u\n",LINK_NEXT_BP(LINK_NEXT_BP(LINK_NEXT_BP(bp))));
-    return;
-}
-
-static void check4pp(unsigned pp) {
-    dbg_printf("%u\n",pp);
-    dbg_printf("%u\n",LINK_PREV_PP(pp));
-    dbg_printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(pp)));
-    dbg_printf("%u\n",LINK_PREV_PP(LINK_PREV_PP(LINK_PREV_PP(pp))));
-
-    return;
-}
 
 static void checkbp_content(unsigned bp) {
     dbg_printf("bp:%u\n",bp);
@@ -246,7 +227,6 @@ static unsigned coalesce(unsigned bp) {
 
 /* 新申请的块逻辑上放在链表最开始处 */
 static unsigned extend_heap(unsigned size) {
-    //dbg_printf("line:%d,function:%s\n",__LINE__,__FUNCTION__);
 
     /*在这开辟新的堆*/
     unsigned temp_p = SHRINK_PTR(mem_sbrk(size)); 
@@ -273,13 +253,23 @@ static unsigned extend_heap(unsigned size) {
 
 /* first fit，成功返回unsigned bp，否则返回0*/
 static unsigned find_fit(unsigned asize) {
-    unsigned bp;
-    for (bp = LINK_NEXT_BP(prol_bp); bp != prol_bp; bp = LINK_NEXT_BP(bp)) {
+    unsigned tar_bp = 0;
+    unsigned tar_size = HEAPSIZE - 1;
+    for (unsigned bp = LINK_NEXT_BP(prol_bp); bp != prol_bp; bp = LINK_NEXT_BP(bp)) {
+        // if (asize <= GET_SIZE(BP2P(bp))) {
+        //     return bp;
+        // }
         if (asize <= GET_SIZE(BP2P(bp))) {
-            return bp;
+            if (GET_SIZE(BP2P(bp)) < tar_size) {
+                tar_bp = bp;
+                tar_size = GET_SIZE(BP2P(bp));
+                if (tar_size - asize <= 2000) {
+                    return tar_bp;
+                }
+            }
         }
     }
-    return 0;
+    return tar_bp;
 }
 
 static void place(unsigned bp, unsigned asize) {
@@ -368,8 +358,9 @@ void *malloc (size_t size) {
 
     req_size = (unsigned)(asize);
     if ((bp = find_fit(req_size)) != 0u) {  
-        dbg_printf("line:%d,function:%s,req_size:%u,bp:%u\n",__LINE__,__FUNCTION__,req_size,bp);
-
+        // dbg_printf("line:%d,function:%s,req_size:%u,bp:%u\n",__LINE__,__FUNCTION__,req_size,bp);
+        dbg_printf("malloc:%u %u %lu\n",req_size,bp,mem_heapsize());        
+        
         place(bp, req_size);
 
         //mm_checkheap(__LINE__); 
@@ -387,7 +378,8 @@ void *malloc (size_t size) {
 
         place(bp, asize);
 
-        dbg_printf("line:%d,function:%s,req_size:%u,bp:%u\n",__LINE__,__FUNCTION__,req_size,bp);
+        // dbg_printf("line:%d,function:%s,req_size:%u,bp:%u\n",__LINE__,__FUNCTION__,req_size,bp);
+        dbg_printf("malloc:%u %u %lu\n",req_size,bp,mem_heapsize());               
 
         //mm_checkheap(__LINE__);
                               

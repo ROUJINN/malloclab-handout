@@ -1,11 +1,3 @@
-start with an implicit free list (mm-textbook.c in your handout directory),
-then change this to an explicit list
-then use the explicit list as the basis for a final version based on segregated lists.
-
-mm-naive.c 很短，一下就可以看完，用来热身
-mm-textbook.c 基本上包括各种所需的宏以及存储结构，一定要好好理解清楚
-确定了具体保存信息的数据结构之后，一定要先完成 heap checker
-
 最后建议直接在服务器上写这个lab，这样就不会因为机器间的性能差异被坑了！！
 
 64-bit machines, heap size 2^32 bytes
@@ -17,16 +9,9 @@ Your allocator must always return pointers that are aligned to 8-byte boundaries
 12 more hints
 u只记入uti p只计入thru 
 
-初始试了一下mm-textbook，发现50util,0thru，说明时间很慢
-
 书上：
-隐式空闲链表的优点是简单。显著的缺点是任何操作的开销，例如放置分配的块，要求对空闲链表进行搜索，该搜索所需时间与堆中已分配块和空闲块的总数呈线性关系。
 
 我们将看到更加精细复杂的分离式空闲链表组织，它接近于最佳适配策略，不需要进行彻底的堆搜索。
-
-边界标记（boundary tag），允许在常数时间内进行对前面块的合并
-
-在对分配器的讨论中，我们会假设使用立即合并，但是你应该了解，快速的分配器通常会选择某种形式的推迟合并。
 
 使用双向链表（显式空闲链表）而不是隐式空闲链表，使首次适配的分配时间从块总数的线性时间减少到了空闲块数量的线性时间。不过，释放一个块的时间可以是线性的，也可能是个常数，这取决于我们所选择的空闲链表中块的排序策略。
 一种方法是用后进先出（LIFO）的顺序维护链表，将新释放的块放置在链表的开始处。使用 LIFO 的顺序和首次适配的放置策略，分配器会最先检查最近使用过的块。在这种情况下，释放一个块可以在常数时间内完成。如果使用了边界标记，那么合并也可以在常数时间内完成。
@@ -37,60 +22,56 @@ ppt p63对上面的有介绍
 
 分离适配是最好的，malloc所用的。
 
+boat问题是分配了20,12的块，释放所有20的，然后a了几个1024，然后a20
+
+binary2-bal问题是随机a了64,448，再随机free，然后a512，但512塞不进去
+
+我看满分的boat,exhaust,Chrome也都是70多，但其他的很高
+打算写个分离适配然后就不管了
+
 gdb mdriver
 r -D -V -c ./traces/realloc.rep > 1.txt
-
 ./mdriver -D -V -c ./traces/perl.rep > 1.txt
-./mdriver -D -V -c ./traces/short1-bal.rep > 1.txt
+./mdriver -D -V -c ./traces/binary2-bal.rep > 1.txt
 ./mdriver -p ./traces/realloc.rep
-
 gprof ./mdriver gmon.out -b > 1.txt
-
 watch *0x800000010
 x /dw 0x800000010
 display /dw 0x800000010
 display /4xb 0x800000010
 
-Results for libc malloc:
+Results for mm malloc:
   valid  util   ops    secs     Kops  trace
-   yes     0%  100000  0.005344 18714 ./traces/alaska.rep
- * yes     0%    4805  0.001538  3125 ./traces/amptjp.rep
- * yes     0%    4162  0.000172 24247 ./traces/bash.rep
- * yes     0%   57716  0.002832 20383 ./traces/boat.rep
- * yes     0%  100000  0.005644 17717 ./traces/boat-plus.rep
- u yes     0%      --        --    -- ./traces/binary2-bal.rep
- * yes     0%    5032  0.000608  8271 ./traces/cccp.rep
- * yes     0%    5848  0.000384 15215 ./traces/cccp-bal.rep
- * yes     0%   11991  0.000437 27427 ./traces/chrome.rep
- * yes     0%   20000  0.000816 24509 ./traces/coalesce-big.rep
-   yes     0%   14400  0.000806 17876 ./traces/coalescing-bal.rep
-   yes     0%      15  0.000006  2634 ./traces/corners.rep
- * yes     0%    5683  0.001680  3382 ./traces/cp-decl.rep
- u yes     0%      --        --    -- ./traces/exhaust.rep
- * yes     0%    5380  0.000318 16920 ./traces/expr-bal.rep
- * yes     0%   99544  0.004780 20826 ./traces/firefox-reddit2.rep
- * yes     0%   55092  0.002993 18407 ./traces/freeciv.rep
-   yes     0%      10  0.000001 16447 ./traces/malloc.rep
-   yes     0%      17  0.000001 31628 ./traces/malloc-free.rep
- p yes     --    1494  0.000064 23370 ./traces/perl.rep
- * yes     0%    4800  0.000577  8315 ./traces/random.rep
- * yes     0%    4800  0.000576  8339 ./traces/random2.rep
-   yes     0%   14401  0.001069 13473 ./traces/realloc.rep
-16 15      0%  386347  0.023419 16497
+   yes    77%  100000  0.005741 17418 ./traces/alaska.rep
+ * yes    92%    4805  0.000532  9040 ./traces/amptjp.rep
+ * yes    81%    4162  0.000190 21925 ./traces/bash.rep
+ * yes    77%   57716  0.002017 28614 ./traces/boat.rep
+ * yes    78%  100000  0.011966  8357 ./traces/boat-plus.rep
+ u yes    73%      --        --    -- ./traces/binary2-bal.rep
+ * yes    93%    5032  0.000477 10551 ./traces/cccp.rep
+ * yes    93%    5848  0.000508 11502 ./traces/cccp-bal.rep
+ * yes    72%   11991  0.000551 21769 ./traces/chrome.rep
+ * yes    98%   20000  0.000887 22539 ./traces/coalesce-big.rep
+   yes    50%   14400  0.000601 23949 ./traces/coalescing-bal.rep
+   yes   100%      15  0.000003  4686 ./traces/corners.rep
+ * yes    96%    5683  0.000756  7517 ./traces/cp-decl.rep
+ u yes    71%      --        --    -- ./traces/exhaust.rep
+ * yes    97%    5380  0.000768  7010 ./traces/expr-bal.rep
+ * yes    84%   99544  0.004644 21437 ./traces/firefox-reddit2.rep
+ * yes    97%   55092  0.002404 22914 ./traces/freeciv.rep
+   yes    17%      10  0.000002  5111 ./traces/malloc.rep
+   yes    14%      17  0.000002  7348 ./traces/malloc-free.rep
+ p yes     --    1494  0.000064 23471 ./traces/perl.rep
+ * yes    87%    4800  0.001409  3407 ./traces/random.rep
+ * yes    85%    4800  0.001575  3048 ./traces/random2.rep
+   yes    32%   14401  0.069457   207 ./traces/realloc.rep
+16 15     86%  386347  0.028746 13440
+
+Perf index = 48 (util) & 38 (thru) = 86/100
+
 没*的不会计入分！！！u只计入util
-
-显式空闲链表+去脚部+立即合并
-可以改成延迟合并，暂时先不改吧
-感觉malloc时还有个小优化就是就是新加block的size，可以看看前面一个块是不是空的，但是引入这个判断不知道会不会降低效率
-
-最小的free block是8还是16貌似没影响，爽啊，那就不改了
 
 trace文件的意思https://111qqz.com/2021/04/csapp-malloclab/
 第2个数 多少个不同的内存块
 第3个数 操作数，也就是malloc(对应'a'),realloc(对应'r'),free(对应'f')三种操作的个数。
-
 对于每一个操作，如果是malloc/relloc, 后面两个参数分别表示操作几号内存块，以及需要分配的内存大小是多少。如果是free,则只有一个参数，表示要操作几号内存块
-
-14 67
-15 69 41+29
-16 66 35+31
